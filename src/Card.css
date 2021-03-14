@@ -9,20 +9,9 @@ body {
   overflow: hidden;
 }
 
-/** Preview */
-.preview {
-  width: 1920px;
-  height: 1080px;
-  transform: scale(0.1656);
-  left: -252%;
-  top: -252%;
-}
-
-/*******************************/
-
-/****************************
-** Style 1 Animation: Left **
-****************************/
+/*****************************
+ ** Style 1 Animation: Left **
+ *****************************/
 @keyframes animation-left-logo {
   0% {
     opacity: 0;
@@ -172,9 +161,9 @@ body {
   }
 }
 
-/******************************
-** Style 1 Animation: Cented **
-******************************/
+/*******************************
+ ** Style 1 Animation: Cented **
+ *******************************/
 @keyframes animation-center-logo {
   0% {
     opacity: 0;
@@ -235,9 +224,9 @@ body {
   }
 }
 
-/*****************************
-** Style 3 Animation: Left/Right  **
-*****************************/
+/***********************************
+ ** Style 3 Animation: Left/Right **
+ ***********************************/
 @keyframes animation-style3-left-logo {
   0% {
     transform: scale(0) rotateZ(90deg);
