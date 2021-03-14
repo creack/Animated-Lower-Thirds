@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import "./Card.css";
 import type { Property } from "csstype";
 
@@ -12,11 +12,19 @@ type TextStyle = {
   textTransform?: Property.TextTransform;
 };
 
+type Animation = {
+  animType: "style-1";
+  animDurationMs: 4000;
+  activeDurationMs: 5000;
+};
+
 type CardProps = {
   title: string;
   text: string;
 
   align?: "right" | "left" | "center";
+
+  anim: Animation;
 
   titleStyle?: TextStyle;
   textStyle?: TextStyle;
@@ -27,7 +35,7 @@ type CardProps = {
 const style1: { graph1: React.CSSProperties; graph2: React.CSSProperties } = {
   graph1: {
     background: "#47D7AC",
-    boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5);",
+    boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
   },
   graph2: {
     background: "rgba(55,85,112,0.46)",
@@ -35,13 +43,13 @@ const style1: { graph1: React.CSSProperties; graph2: React.CSSProperties } = {
     border: "solid 0rem",
     borderColor: "none",
     borderRadius: "calc(1.24rem * 1.1)",
-    boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5);",
+    boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
   },
 };
 
 const Card: React.FC<CardProps> = (props): ReactElement => {
   const animationStyle: React.CSSProperties = {
-    animationDuration: "4s",
+    animationDuration: `${props.anim.animDurationMs}ms`,
   };
   const fontStyle: React.CSSProperties = {
     fontSize: "28px",
@@ -71,9 +79,24 @@ const Card: React.FC<CardProps> = (props): ReactElement => {
     textStyle.height = `calc(${textStyle.fontSize}) + 0.25em`;
   }
 
+  const [animClass, setAnimClass] = useState("hide-anim");
+
+  useEffect(() => {
+    setAnimClass("animation-in");
+
+    setTimeout(() => {
+      setAnimClass("animation-out");
+
+      setTimeout(() => {
+        console.log("---> Hide anim.");
+        setAnimClass("hide-anim");
+      }, props.anim.activeDurationMs);
+    }, props.anim.animDurationMs);
+  }, []);
+
   return (
     <div className="Card">
-      <div id="lower-third-1" className="alt left style-1 hide-anim" style={{ ...fontStyle }}>
+      <div key={animClass} className={`alt ${props.align} ${props.anim.animType} ${animClass}`} style={{ ...fontStyle }}>
         <div id="alt-1-logo" className="logo no-logo" style={{ ...animationStyle }}>
           <img id="alt-1-logo-image" src="//:0" style={{ maxHeight: props.logoMaxHeigh }} />
         </div>
@@ -82,10 +105,14 @@ const Card: React.FC<CardProps> = (props): ReactElement => {
 
         <div className="text-content">
           <div className="text-mask" style={titleStyle}>
-            <div id="alt-1-name" style={{ ...animationStyle }}></div>
+            <div id="alt-1-name" style={{ ...animationStyle }}>
+              {props.title}
+            </div>
           </div>
           <div className="text-mask" style={textStyle}>
-            <div id="alt-1-info" style={{ ...animationStyle }}></div>
+            <div id="alt-1-info" style={{ ...animationStyle }}>
+              {props.text}
+            </div>
           </div>
         </div>
 
