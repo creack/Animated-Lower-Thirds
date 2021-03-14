@@ -1,0 +1,11 @@
+---
+# Use double quotes as it is the standard.
+singleQuote: false
+
+# NOTE: printWidth is defined in .editorconfig and picked up by prettier from there.
+
+# Enforce trailing comma everywhere for consistency.
+trailingComma: all
+
+# Typescript requires semi columns in types.
+semi: true

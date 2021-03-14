@@ -1,0 +1,23 @@
+---
+parser: '@typescript-eslint/parser'
+
+env:
+  es2021: true
+  node: true
+  browser: true
+
+extends:
+  - eslint:recommended
+  - 'plugin:@typescript-eslint/recommended'
+
+plugins:
+  - prettier
+  - '@typescript-eslint'
+
+rules:
+  prettier/prettier: warn  # Enable prettier.
+
+# Ignore irrelevant dirs.
+ignorePatterns:
+  - node_modules
+  - build
