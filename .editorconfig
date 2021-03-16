@@ -8,7 +8,7 @@ trim_trailing_whitespace = true   # Don't leave trailing whitespaces.
 charset                  = utf-8  # Default to utf8 encoding.
 indent_style             = space  # Space > tab for consistent aligns.
 indent_size              = 2      # Default to 2 spaces for indent/tabs.
-max_line_length          = 180    # Flag long lines.
+max_line_length          = 80    # Flag long lines.
 
 # Explicitly define settings for commonly used files.
 

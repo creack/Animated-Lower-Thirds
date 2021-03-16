@@ -1,0 +1,122 @@
+:root {
+  --interface-size: 1;
+  --obs-background: #3a393a;
+
+  --base-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+
+  --panel-background: var(--obs-background);
+  --panel-color: #d2d2d2;
+  --panel-font: normal 12px var(--base-font-family);
+}
+
+body {
+  background: var(--obs-background);
+}
+
+.ControlPanel {
+  font-family: var(--font-family);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.ControlPanel .Panel {
+  box-shadow: inset 0px 0px 5px 0px rgb(0 0 0 / 20%);
+
+  background: var(--panel-background);
+  color: var(--panel-color);
+  font: var(--panel-font);
+
+  max-width: 100%;
+  margin: 8px 3px 30px;
+  user-select: none;
+  overflow-x: hidden;
+}
+
+.grid-container {
+  background: darkcyan;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "Alignment StyleType Size Margins Margins"
+    "TextSize Spacing Font Font Font"
+    "LogoSize Shadows MainColors MainColors MainColors"
+    "RoundCorner Borders BorderColors BorderColors BorderColors"
+    "Logo MainText MainText MainTextControls MainTextControls"
+    "Logo SecondaryText SecondaryText SecondaryTextControls SecondaryTextControls";
+}
+
+.Alignment {
+  grid-area: Alignment;
+}
+
+.StyleType {
+  grid-area: StyleType;
+}
+
+.TextSize {
+  grid-area: TextSize;
+}
+
+.Spacing {
+  grid-area: Spacing;
+}
+
+.LogoSize {
+  grid-area: LogoSize;
+}
+
+.Shadows {
+  grid-area: Shadows;
+}
+
+.RoundCorner {
+  grid-area: RoundCorner;
+}
+
+.Borders {
+  grid-area: Borders;
+}
+
+.Size {
+  grid-area: Size;
+}
+
+.Margins {
+  grid-area: Margins;
+}
+
+.Font {
+  grid-area: Font;
+}
+
+.MainColors {
+  grid-area: MainColors;
+}
+
+.BorderColors {
+  grid-area: BorderColors;
+}
+
+.Logo {
+  grid-area: Logo;
+}
+
+.MainText {
+  grid-area: MainText;
+}
+
+.SecondaryText {
+  grid-area: SecondaryText;
+}
+
+.MainTextControls {
+  grid-area: MainTextControls;
+}
+
+.SecondaryTextControls {
+  grid-area: SecondaryTextControls;
+}

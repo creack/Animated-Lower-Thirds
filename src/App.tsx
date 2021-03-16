@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect } from "react";
 // import "./App.css";
 import Card from "./Card";
+import ControlPanel from "./ControlPanel";
 //import { shuffle } from "./utils";
 
 /* const bcp = new BroadcastChannel("obs-lower-thirds-channel"); // Receives from the source
@@ -155,26 +156,27 @@ const App: React.FC = (): ReactElement => {
    * }; */
   return (
     <div className="App">
-      <Card
-        title="Hell2o"
-        text="world"
-        align="right"
-        anim={{
+      <ControlPanel />
+      {/* <Card
+          title="Hell2o"
+          text="world"
+          align="right"
+          anim={{
           animType: "style-1",
           animDurationMs: 4000,
           activeDurationMs: 5000,
-        }}
-        titleStyle={{
+          }}
+          titleStyle={{
           fontFamily: "Fira Code, monospace",
           fontSize: "1.6em",
           color: "#F2F2F2",
-        }}
-        textStyle={{
+          }}
+          textStyle={{
           fontFamily: "Fira Code, monospace",
           fontSize: "1.4em",
           color: "#8A8A8A",
-        }}
-      />
+          }}
+          /> */}
     </div>
   );
 };
