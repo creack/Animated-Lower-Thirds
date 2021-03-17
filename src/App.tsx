@@ -1,8 +1,9 @@
 import React, { ReactElement, useEffect } from "react";
 // import "./App.css";
-import Card from "./Card";
+// import Card from "./Card";
 import ControlPanel from "./ControlPanel";
 //import { shuffle } from "./utils";
+import Foo from "./Foo";
 
 /* const bcp = new BroadcastChannel("obs-lower-thirds-channel"); // Receives from the source
  * const bcr = new BroadcastChannel("obs-lower-thirds-channel2"); // Send to Control Panel
