@@ -9,12 +9,12 @@ import "./Form.css";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
-    topBarGridRoot: {},
+    topBarGridRoot: {
+      paddingBottom: theme.spacing(1),
+    },
     gridRoot: {},
-    paper: {
+    paperRoot: {
       padding: theme.spacing(1),
-      textAlign: "left",
       alignItems: "center",
       color: theme.palette.text.secondary,
     },
@@ -77,22 +77,20 @@ const Panel: React.FC<panelPropTypes> = (props) => {
   const [isFolded, setIsFolded] = useState<boolean>(false);
 
   return (
-    <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <Grid container direction="column" className={classes.gridRoot}>
-          <Grid container>
-            <TopBar
-              {...props}
-              isActive={isActive}
-              setIsActive={setIsActive}
-              isFolded={isFolded}
-              setIsFolded={setIsFolded}
-            />
-          </Grid>
-          <Grid item>{props.children}</Grid>
+    <Paper className={classes.paperRoot}>
+      <Grid container direction="column" className={classes.gridRoot}>
+        <Grid container>
+          <TopBar
+            {...props}
+            isActive={isActive}
+            setIsActive={setIsActive}
+            isFolded={isFolded}
+            setIsFolded={setIsFolded}
+          />
         </Grid>
-      </Paper>
-    </div>
+        <Grid item>{props.children}</Grid>
+      </Grid>
+    </Paper>
   );
 };
 
