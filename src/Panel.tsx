@@ -1,14 +1,17 @@
-import React, { ReactElement, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import { UnfoldLess, UnfoldMore } from "@material-ui/icons";
 import Switch from "@material-ui/core/Switch";
-//import "./Panel.css";
+
+import "./Form.css";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: { flexGrow: 1 },
+    root: {},
+    topBarGridRoot: {},
+    gridRoot: {},
     paper: {
       padding: theme.spacing(1),
       textAlign: "left",
@@ -23,67 +26,70 @@ type panelPropTypes = {
   icon?: React.ReactNode;
 };
 
-type panelStateTypes = {
+type topBarPropTypes = panelPropTypes & {
   isActive: boolean;
+  setIsActive: (b: boolean) => void;
   isFolded: boolean;
+  setIsFolded: (b: boolean) => void;
 };
 
-const Panel: React.FC<panelPropTypes> = (props): ReactElement => {
-  const [state, setState] = useState<panelStateTypes>({
-    isActive: true,
-    isFolded: false,
-  });
-
-  const toggleFold = () => setState({ ...state, isFolded: !state.isFolded });
-  const toggleActive = () => setState({ ...state, isActive: !state.isActive });
-
+const TopBar: React.FC<topBarPropTypes> = (props) => {
   const classes = useStyles();
+
+  const foldIcon = (
+    <div onClick={() => props.setIsFolded(!props.isFolded)}>
+      {props.isFolded ? <UnfoldLess /> : <UnfoldMore />}
+    </div>
+  );
+
+  return (
+    <Grid
+      container
+      justify="space-between"
+      alignItems="center"
+      className={classes.topBarGridRoot}
+    >
+      <Grid container item sm={10} alignItems="center">
+        <Grid item>{props.icon}</Grid>
+        <Grid item>{props.title}</Grid>
+      </Grid>
+
+      <Grid container item sm={2} justify="flex-end" alignItems="center">
+        <Grid item>{foldIcon}</Grid>
+
+        <Grid item>
+          <Switch
+            size="small"
+            checked={props.isActive}
+            color="primary"
+            onChange={() => props.setIsActive(!props.isActive)}
+          />
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+};
+
+const Panel: React.FC<panelPropTypes> = (props) => {
+  const classes = useStyles();
+
+  const [isActive, setIsActive] = useState<boolean>(true);
+  const [isFolded, setIsFolded] = useState<boolean>(false);
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <Grid container direction="column">
-          <Grid container style={{ background: "red" }} alignItems="center">
-            <Grid container xs={10} alignItems="center">
-              <Grid item style={{ background: "darkgreen" }}>
-                {props.icon}
-              </Grid>
-              <Grid item style={{ background: "darkred" }}>
-                {props.title}
-              </Grid>
-            </Grid>
-
-            <Grid
-              container
-              xs={2}
-              style={{ background: "lightgray" }}
-              alignItems="center"
-            >
-              <Grid item xs style={{ background: "yellow" }}>
-                <div
-                  style={{ textAlign: "right", background: "red" }}
-                  onClick={toggleFold}
-                >
-                  {state.isFolded ? <UnfoldLess /> : <UnfoldMore />}
-                </div>
-              </Grid>
-
-              <Grid item xs style={{ background: "brown" }}>
-                <div style={{ background: "pink" }}>
-                  <Switch
-                    checked={state.isActive}
-                    color="primary"
-                    onChange={toggleActive}
-                  />
-                </div>
-              </Grid>
-            </Grid>
-          </Grid>
+        <Grid container direction="column" className={classes.gridRoot}>
           <Grid container>
-            <Grid item xs>
-              {props.children}
-            </Grid>
+            <TopBar
+              {...props}
+              isActive={isActive}
+              setIsActive={setIsActive}
+              isFolded={isFolded}
+              setIsFolded={setIsFolded}
+            />
           </Grid>
+          <Grid item>{props.children}</Grid>
         </Grid>
       </Paper>
     </div>

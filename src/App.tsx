@@ -3,7 +3,7 @@ import React, { ReactElement, useEffect } from "react";
 // import Card from "./Card";
 import ControlPanel from "./ControlPanel";
 //import { shuffle } from "./utils";
-import Foo from "./Foo";
+//import Foo from "./Foo";
 
 /* const bcp = new BroadcastChannel("obs-lower-thirds-channel"); // Receives from the source
  * const bcr = new BroadcastChannel("obs-lower-thirds-channel2"); // Send to Control Panel
@@ -156,7 +156,7 @@ const App: React.FC = (): ReactElement => {
    *   console.log(e.data);
    * }; */
   return (
-    <div className="App">
+    <div className="App" style={{ maxWidth: "600px", margin: "auto" }}>
       <ControlPanel />
       {/* <Card
           title="Hell2o"
