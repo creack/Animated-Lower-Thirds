@@ -14,16 +14,16 @@ class Duration {
     this._unit = unit;
   }
 
-  toUnit(unit: unitOfTime) {
+  toUnit(unit: unitOfTime): void {
     this._value *= this._unit / unit;
     this._unit = unit;
   }
 
-  unitAbbrev() {
+  unitAbbrev(): string {
     return Duration._unitAbbrev(this._unit);
   }
 
-  static _unitAbbrev(unit: unitOfTime) {
+  static _unitAbbrev(unit: unitOfTime): string {
     switch (unit) {
       case unitOfTime.Millisecond:
         return "ms";
@@ -38,21 +38,22 @@ class Duration {
     }
   }
 
-  toString(n = 2) {
+  toString(n = 2): string {
     return `${this.toFixed(n)} ${this.unitAbbrev()}`;
   }
 
-  toFixed(n = 2) {
+  toFixed(n = 2): string {
     return this._value
       .toFixed(n)
       .replace(/(\.[1-9]*)0*$/, "$1")
       .replace(/\.$/, "");
   }
 
-  milliseconds = () => (this._value * this._unit) / unitOfTime.Millisecond;
-  seconds = () => (this._value * this._unit) / unitOfTime.Second;
-  minutes = () => (this._value * this._unit) / unitOfTime.Minute;
-  hours = () => (this._value * this._unit) / unitOfTime.Hour;
+  milliseconds = (): number =>
+    (this._value * this._unit) / unitOfTime.Millisecond;
+  seconds = (): number => (this._value * this._unit) / unitOfTime.Second;
+  minutes = (): number => (this._value * this._unit) / unitOfTime.Minute;
+  hours = (): number => (this._value * this._unit) / unitOfTime.Hour;
 }
 
 export default Duration;

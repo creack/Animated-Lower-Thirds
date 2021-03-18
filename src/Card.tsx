@@ -19,8 +19,8 @@ type Animation = {
 };
 
 type CardProps = {
-  title: string;
-  text: string;
+  primaryText: string;
+  secondaryText: string;
 
   align?: "right" | "left" | "center";
 
@@ -34,6 +34,9 @@ type CardProps = {
 
 const style1: { graph1: React.CSSProperties; graph2: React.CSSProperties } = {
   graph1: {
+    order: 1,
+    minWidth: "0.3em",
+    height: "8em",
     background: "#47D7AC",
     boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
   },
@@ -50,7 +53,7 @@ const style1: { graph1: React.CSSProperties; graph2: React.CSSProperties } = {
 type animStep = "pre-load" | "ease-in" | "active" | "ease-out" | "unloaded";
 type animClass = "" | "hide-anim" | "animation-in" | "animation-out";
 
-const Card: React.FC<CardProps> = (props): ReactElement => {
+const Card: React.FC<CardProps> = (props) => {
   const animationStyle: React.CSSProperties = {
     animationDuration: `${props.anim.animDurationMs}ms`,
   };
@@ -73,27 +76,50 @@ const Card: React.FC<CardProps> = (props): ReactElement => {
     transition: "margin 0.1s",
     marginBottom: "0em",
   };
-  const titleStyle: React.CSSProperties = { ...defaultTextStyle, ...defaultTitleStyle, ...props.titleStyle };
+  const titleStyle: React.CSSProperties = {
+    ...defaultTextStyle,
+    ...defaultTitleStyle,
+    ...props.titleStyle,
+  };
   if (!titleStyle.height) {
     titleStyle.height = `calc(${titleStyle.fontSize}) + 0.25em`;
   }
-  const textStyle: React.CSSProperties = { ...defaultTextStyle, ...props.textStyle };
+  const textStyle: React.CSSProperties = {
+    ...defaultTextStyle,
+    ...props.textStyle,
+  };
   if (!textStyle.height) {
     textStyle.height = `calc(${textStyle.fontSize}) + 0.25em`;
   }
 
-  const [[curAnimClass, curAnimStep], setState] = useState<[animClass, animStep]>(["hide-anim", "pre-load"]);
+  const [[curAnimClass, curAnimStep], setState] = useState<
+    [animClass, animStep]
+  >(["hide-anim", "pre-load"]);
 
-  const nextAnimStep = (curStep: animStep): { nextStep: animStep; className: animClass; delay: number } => {
+  const nextAnimStep = (
+    curStep: animStep,
+  ): { nextStep: animStep; className: animClass; delay: number } => {
     switch (curStep) {
       case "pre-load":
         return { nextStep: "ease-in", className: "animation-in", delay: 0 };
       case "ease-in":
-        return { nextStep: "active", className: "", delay: props.anim.animDurationMs };
+        return {
+          nextStep: "active",
+          className: "",
+          delay: props.anim.animDurationMs,
+        };
       case "active":
-        return { nextStep: "ease-out", className: "animation-out", delay: props.anim.activeDurationMs };
+        return {
+          nextStep: "ease-out",
+          className: "animation-out",
+          delay: props.anim.activeDurationMs,
+        };
       case "ease-out":
-        return { nextStep: "unloaded", className: "hide-anim", delay: props.anim.animDurationMs };
+        return {
+          nextStep: "unloaded",
+          className: "hide-anim",
+          delay: props.anim.animDurationMs,
+        };
       case "unloaded":
         return { nextStep: "pre-load", className: "", delay: 1000 };
       default:
@@ -104,7 +130,9 @@ const Card: React.FC<CardProps> = (props): ReactElement => {
   useEffect(() => {
     const { nextStep, className, delay } = nextAnimStep(curAnimStep);
 
-    console.log(`[effect] CurStep: ${curAnimStep}, nextStep: ${nextStep}, nextClass: ${className}, delay: ${delay}.`);
+    console.log(
+      `[effect] CurStep: ${curAnimStep}, nextStep: ${nextStep}, nextClass: ${className}, delay: ${delay}.`,
+    );
 
     if (delay < 0) {
       return;
@@ -118,23 +146,33 @@ const Card: React.FC<CardProps> = (props): ReactElement => {
 
   return (
     <div className="Card">
-      <div key={curAnimClass} className={`alt ${props.align} ${props.anim.animType} ${curAnimClass}`} style={{ ...fontStyle }}>
+      <div
+        key={curAnimClass}
+        className={`alt ${props.align} ${props.anim.animType} ${curAnimClass}`}
+        style={{ ...fontStyle }}
+      >
         <div className="logo no-logo" style={{ ...animationStyle }}>
           <img src="//:0" style={{ maxHeight: props.logoMaxHeigh }} />
         </div>
 
-        <div className="graph-1" style={{ ...animationStyle, ...style1.graph1 }}></div>
+        <div
+          className="graph-1"
+          style={{ ...animationStyle, ...style1.graph1 }}
+        ></div>
 
         <div className="text-content">
           <div className="text-mask" style={titleStyle}>
-            <div style={{ ...animationStyle }}>{props.title}</div>
+            <div style={{ ...animationStyle }}>{props.primaryText}</div>
           </div>
           <div className="text-mask" style={textStyle}>
-            <div style={{ ...animationStyle }}>{props.text}</div>
+            <div style={{ ...animationStyle }}>{props.secondaryText}</div>
           </div>
         </div>
 
-        <div className="graph-2" style={{ ...animationStyle, ...style1.graph2 }}></div>
+        <div
+          className="graph-2"
+          style={{ ...animationStyle, ...style1.graph2 }}
+        ></div>
       </div>
     </div>
   );

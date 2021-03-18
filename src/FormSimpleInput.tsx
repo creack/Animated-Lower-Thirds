@@ -56,7 +56,7 @@ const FormSimpleInput: React.FC<simpleInputPropTypes> = (props) => {
           <InputAdornment position="end">{props.endAbornment}</InputAdornment>
         ),
       }}
-      InputLabelProps={{ classes: { root: classes.labelRoot } }}
+      InputLabelProps={{ shrink: true, classes: { root: classes.labelRoot } }}
     />
   );
 };

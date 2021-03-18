@@ -2,7 +2,7 @@ import React, { useState } from "react";
 // Styles/CSS/Theme.
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 // Layout components.
-import { Grid, Paper } from "@material-ui/core";
+import { Grid, Paper, IconButton, Typography } from "@material-ui/core";
 // Icons.
 import {
   Lock as LockCloseIcon,
@@ -16,9 +16,17 @@ import FormSimpleInput from "./FormSimpleInput";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {},
-    paperRoot: {},
+    gridRoot: {},
+    paperRoot: {
+      display: "flex",
+      flexWrap: "wrap",
+      marginTop: theme.spacing(1),
+      padding: theme.spacing(0.5),
+    },
     paper: {},
+    abbrev: {
+      color: theme.palette.text.secondary,
+    },
   }),
 );
 
@@ -44,22 +52,22 @@ const FormTimers: React.FC<propTypes> = (props) => {
   );
 
   const activeLockIcon = (
-    <div onClick={() => setActiveLock(!activeLock)}>
+    <IconButton edge="end" onClick={() => setActiveLock(!activeLock)}>
       {activeLock ? (
         <LockCloseIcon fontSize="small" color="primary" />
       ) : (
         <LockOpenIcon fontSize="small" />
       )}
-    </div>
+    </IconButton>
   );
   const inactiveTimerIcon = (
-    <div onClick={() => setInactiveTimer(!inactiveTimer)}>
+    <IconButton edge="end" onClick={() => setInactiveTimer(!inactiveTimer)}>
       {inactiveTimer ? (
         <TimerOnIcon fontSize="small" color="primary" />
       ) : (
         <TimerOffIcon fontSize="small" />
       )}
-    </div>
+    </IconButton>
   );
 
   const updateDuration = (setDuration: (d: Duration) => void) => (
@@ -79,7 +87,7 @@ const FormTimers: React.FC<propTypes> = (props) => {
         justify="space-between"
         alignItems="center"
         spacing={1}
-        className={classes.root}
+        className={classes.gridRoot}
       >
         <Grid item xs={3}>
           {props.label}
@@ -93,32 +101,40 @@ const FormTimers: React.FC<propTypes> = (props) => {
           />
         </Grid>
         <Grid item xs={3}>
-          <Grid container alignItems="flex-end">
-            <Grid item xs>
-              <FormSimpleInput
-                onChange={updateDuration(setActiveDuration)}
-                disabled={activeLock}
-                value={!activeLock ? activeDuration.toFixed() : "Always active"}
-                label="Active duration"
-                startAbornment={activeLockIcon}
-                endAbornment={!activeLock && activeDuration.unitAbbrev()}
-              />
-            </Grid>
-          </Grid>
+          <FormSimpleInput
+            onChange={updateDuration(setActiveDuration)}
+            disabled={activeLock}
+            value={!activeLock ? activeDuration.toFixed() : "Always active"}
+            label="Active duration"
+            endAbornment={
+              <>
+                {!activeLock && (
+                  <Typography className={classes.abbrev}>
+                    {activeDuration.unitAbbrev()}
+                  </Typography>
+                )}
+                {activeLockIcon}
+              </>
+            }
+          />
         </Grid>
         <Grid item xs={3}>
-          <Grid container alignItems="flex-end">
-            <Grid item>
-              <FormSimpleInput
-                onChange={updateDuration(setInactiveDuration)}
-                disabled={inactiveTimer}
-                value={!inactiveTimer ? inactiveDuration.toFixed() : "Disabled"}
-                label="Inactive duration"
-                startAbornment={inactiveTimerIcon}
-                endAbornment={!inactiveTimer && inactiveDuration.unitAbbrev()}
-              />
-            </Grid>
-          </Grid>
+          <FormSimpleInput
+            onChange={updateDuration(setInactiveDuration)}
+            disabled={inactiveTimer}
+            value={!inactiveTimer ? inactiveDuration.toFixed() : "Disabled"}
+            label="Inactive duration"
+            endAbornment={
+              <>
+                {!inactiveTimer && (
+                  <Typography className={classes.abbrev}>
+                    {inactiveDuration.unitAbbrev()}
+                  </Typography>
+                )}
+                {inactiveTimerIcon}
+              </>
+            }
+          />
         </Grid>
       </Grid>
     </Paper>
