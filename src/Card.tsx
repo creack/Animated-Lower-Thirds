@@ -1,6 +1,6 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import "./Card.css";
 import type { Property } from "csstype";
+import React, { useEffect, useState } from "react";
+import "./Card.css";
 
 type TextStyle = {
   fontFamily?: string;
@@ -47,6 +47,19 @@ const style1: { graph1: React.CSSProperties; graph2: React.CSSProperties } = {
     borderColor: "none",
     borderRadius: "calc(1.24rem * 1.1)",
     boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
+
+    order: 3,
+    zIndex: -1,
+    position: "absolute",
+    width: "100%",
+    height: "calc(100% + 2em)",
+    margin: "0 -1em",
+    padding: "0 1em",
+    boxSizing: "border-box",
+
+    right: 0,
+    marginLeft: "-1.8em",
+    paddingLeft: "1.8em",
   },
 };
 

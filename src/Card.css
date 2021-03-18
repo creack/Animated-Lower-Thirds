@@ -298,28 +298,3 @@ body {
 .style-1.right > .text-content {
   margin-right: 1.2em;
 }
-
-.style-1 > .graph-1 {
-  order: 1;
-  position: relative;
-  min-width: 0.3em;
-  height: 3.5em;
-}
-
-.style-1 > .graph-2 {
-  order: 3;
-  z-index: -1;
-  position: absolute;
-  width: 100%;
-  height: calc(100% + 2em);
-  margin: 0 -1em;
-  padding: 0 1em;
-
-  box-sizing: border-box;
-}
-
-.style-1.right > .graph-2 {
-  right: 0;
-  margin-left: -1.8em;
-  padding-left: 1.8em;
-}
