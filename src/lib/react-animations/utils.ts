@@ -28,30 +28,30 @@ export const cubicBezier = (
   d: CSSValue,
 ): CSSValue => `cubic-bezier(${a}, ${b}, ${c}, ${d})`;
 
-export const translate3d = (a: CSSValue, b: CSSValue, c: CSSValue): CSSValue =>
+export const translate3d = (a: CSSValue, b: CSSValue, c: CSSValue): string =>
   `translate3d(${a}, ${b}, ${c})`;
 
-export const translateX = (a: CSSValue): CSSValue => `translateX(${a})`;
+export const translateX = (a: CSSValue): string => `translateX(${a})`;
 
-export const scale3d = (a: CSSValue, b: CSSValue, c: CSSValue): CSSValue =>
+export const scale3d = (a: CSSValue, b: CSSValue, c: CSSValue): string =>
   `scale3d(${a}, ${b}, ${c})`;
 
-export const scale = (a: CSSValue): CSSValue => `scale(${a})`;
+export const scale = (a: CSSValue): string => `scale(${a})`;
 
-export const skewX = (deg: CSSValue): CSSValue => `skewX(${deg}deg)`;
+export const skewX = (deg: CSSValue): string => `skewX(${deg}deg)`;
 
-export const skewY = (deg: CSSValue): CSSValue => `skewY(${deg}deg)`;
+export const skewY = (deg: CSSValue): string => `skewY(${deg}deg)`;
 
-export const skewXY = (x: CSSValue, y: CSSValue): CSSValue =>
+export const skewXY = (x: CSSValue, y: CSSValue): string =>
   `${skewX(x)} ${skewY(y)}`;
 
-export const rotateY = (a: CSSValue): CSSValue => `rotateY(${a})`;
+export const rotateY = (a: CSSValue): string => `rotateY(${a})`;
 
 export const rotate3d = (
   a: CSSValue,
   b: CSSValue,
   c: CSSValue,
   d: CSSValue,
-): CSSValue => `rotate3d(${a}, ${b}, ${c}, ${d}deg)`;
+): string => `rotate3d(${a}, ${b}, ${c}, ${d}deg)`;
 
-export const perspective = (a: CSSValue): CSSValue => `perspective(${a})`;
+export const perspective = (a: CSSValue): string => `perspective(${a})`;

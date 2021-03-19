@@ -268,26 +268,7 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
         <Button onClick={start}>Hello</Button>
         <FormTimers label={`${props.name} Times`} />
       </Panel>
-      <Card2
-        primaryText={primaryText}
-        secondaryText={secondaryText}
-        align="right"
-        anim={{
-          animType: "style-1",
-          animDurationMs: 4000,
-          activeDurationMs: 500,
-        }}
-        titleStyle={{
-          fontFamily: "Fira Code, monospace",
-          fontSize: "1.6em",
-          color: "#F2F2F2",
-        }}
-        textStyle={{
-          fontFamily: "Fira Code, monospace",
-          fontSize: "1.4em",
-          color: "#8A8A8A",
-        }}
-      />
+      <Card2 />
       {true && (
         <Card
           primaryText={primaryText}
