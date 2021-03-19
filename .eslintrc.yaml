@@ -1,5 +1,5 @@
 ---
-parser: '@typescript-eslint/parser'
+parser: "@typescript-eslint/parser"
 
 env:
   es2021: true
@@ -8,14 +8,16 @@ env:
 
 extends:
   - eslint:recommended
-  - 'plugin:@typescript-eslint/recommended'
+  - "plugin:@typescript-eslint/recommended"
 
 plugins:
   - prettier
-  - '@typescript-eslint'
+  - "@typescript-eslint"
 
 rules:
-  prettier/prettier: warn  # Enable prettier.
+  prettier/prettier: warn # Enable prettier.
+  # TODO: Re-enable this after dev.
+  "@typescript-eslint/no-unused-vars": off
 
 # Ignore irrelevant dirs.
 ignorePatterns:

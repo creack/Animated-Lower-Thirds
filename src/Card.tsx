@@ -14,8 +14,8 @@ type TextStyle = {
 
 type Animation = {
   animType: "style-1";
-  animDurationMs: 4000;
-  activeDurationMs: 5000;
+  animDurationMs: number;
+  activeDurationMs: number;
 };
 
 type CardProps = {
@@ -36,15 +36,18 @@ const style1: { graph1: React.CSSProperties; graph2: React.CSSProperties } = {
   graph1: {
     order: 1,
     minWidth: "0.3em",
-    height: "8em",
+    height: "3.5em",
     background: "#47D7AC",
     boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
+    border: "2px solid red",
+    position: "absolute",
+    bottom: 10,
   },
   graph2: {
     background: "rgba(55,85,112,0.46)",
     opacity: "",
-    border: "solid 0rem",
-    borderColor: "none",
+    //border: "solid 0rem",
+    //borderColor: "none",
     borderRadius: "calc(1.24rem * 1.1)",
     boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
 
@@ -60,6 +63,8 @@ const style1: { graph1: React.CSSProperties; graph2: React.CSSProperties } = {
     right: 0,
     marginLeft: "-1.8em",
     paddingLeft: "1.8em",
+
+    border: "2px solid red",
   },
 };
 
@@ -164,16 +169,16 @@ const Card: React.FC<CardProps> = (props) => {
         className={`alt ${props.align} ${props.anim.animType} ${curAnimClass}`}
         style={{ ...fontStyle }}
       >
-        <div className="logo no-logo" style={{ ...animationStyle }}>
+        <div
+          className="logo no-logo"
+          style={{ ...animationStyle, display: "none" }}
+        >
           <img src="//:0" style={{ maxHeight: props.logoMaxHeigh }} />
         </div>
 
-        <div
-          className="graph-1"
-          style={{ ...animationStyle, ...style1.graph1 }}
-        ></div>
+        <div style={{ ...animationStyle, ...style1.graph1 }}></div>
 
-        <div className="text-content">
+        <div className="text-content" style={{ display: "none" }}>
           <div className="text-mask" style={titleStyle}>
             <div style={{ ...animationStyle }}>{props.primaryText}</div>
           </div>
@@ -183,8 +188,7 @@ const Card: React.FC<CardProps> = (props) => {
         </div>
 
         <div
-          className="graph-2"
-          style={{ ...animationStyle, ...style1.graph2 }}
+          style={{ ...animationStyle, ...style1.graph2, display: "none" }}
         ></div>
       </div>
     </div>

@@ -1,50 +1,116 @@
-import React, { useState } from "react";
-
-// Styles/CSS/Theme.
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-
 // Layout components.
 // eslint-disable-next-line
-import { Grid, Paper, Fade, Slide, Button } from "@material-ui/core";
-
+import { BoxProps, Button, Grid, Slide } from "@material-ui/core";
+// Styles/CSS/Theme.
+import {
+  createStyles,
+  makeStyles,
+  StylesProvider,
+} from "@material-ui/core/styles";
 // Icons.
 import {
   Filter1 as Filter1Icon,
   Settings as SettingsIcon,
 } from "@material-ui/icons";
-
+import React, { useEffect, useState } from "react";
+import Card from "./Card";
+import Card2 from "./Card2";
 import FormSimpleInput from "./FormSimpleInput";
 import FormTimers from "./FormTimers";
+import slideInLeft from "./lib/animations/SlideInLeft";
+import makeAnimation from "./lib/makeAnimation";
 import Panel from "./Panel";
-import Card from "./Card";
 
-// eslint-disable-next-line
-// @ts-ignore // No type definition provided by the lib.
-import { slideInLeft as slideBar } from "react-animations";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, Keyframes } from "styled-components";
 
-const slideInLeft = slideBar;
-const slideFoo = keyframes`${slideInLeft}`;
-const SlideFooDiv = styled.div`
-  animation: infinite 5s ${slideFoo};
-  position: absolute;
-  left: 100;
+import { translate3d } from "./lib/react-animations/utils";
+import { Animation } from "./lib/react-animations/types";
+
+const graph1A: Animation = {
+  "0%": {
+    opacity: 0,
+    transform: translate3d("10em", 0, 0),
+  },
+  "25%": {
+    opacity: 0,
+    transform: translate3d("10em", 0, 0),
+  },
+  "50%": {
+    opacity: 1,
+  },
+  "75%": {
+    transform: translate3d(0, 0, 0),
+  },
+  "100%": {
+    transform: translate3d(0, 0, 0),
+  },
+};
+
+const Wrap = styled.div`
+  animation: cubic-bezier(0.19, 0.76, 0.32, 1) 1 normal both;
+  animation-duration: 5s;
 `;
 
-export const FooBar0: React.FC = () => {
+const _ = styled.div``;
+
+const AnimationF: React.FC<BoxProps> = (props) => {
+  const [Ann1, setAnn1] = useState<typeof _>(Wrap);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setAnn1(
+        styled(Ann1)`
+          animation: cubic-bezier(0.19, 0.76, 0.32, 1) 1 reverse both;
+        `,
+      );
+    }, 6000);
+  }, []);
+
+  const Inn = makeAnimation(graph1A, `animation-duration: 5s;`);
+
   return (
-    <SlideFooDiv>
-      <img src="https://picsum.photos/300/200/?random" />
-    </SlideFooDiv>
+    <div>
+      <StylesProvider injectFirst>
+        <Ann1 {...props}>
+          <div>
+            <Inn>
+              <div>{props.children}</div>
+            </Inn>
+          </div>
+        </Ann1>
+      </StylesProvider>
+    </div>
   );
 };
 
 export const FooBar: React.FC = () => {
   const classes = useStyles();
+
   return (
-    <div className={classes.animatedItem}>
-      <img src="https://picsum.photos/300/200/?random" />
-    </div>
+    <AnimationF>
+      <div
+        style={{
+          background: "#47D7AC",
+          height: "3.5em",
+          width: "0.3em",
+          boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
+          border: "2px solid blue",
+          position: "absolute",
+          fontSize: "28px",
+          bottom: "6rem",
+          left: "4rem",
+          flexDirection: "row",
+
+          fontFamily: "Open Sans, sans-serif",
+          fontWeight: "normal",
+          color: "#F2F2F2",
+          textTransform: "none",
+
+          transition: "margin 0.1s",
+          marginBottom: "0em",
+        }}
+      />
+    </AnimationF>
   );
 };
 
@@ -56,11 +122,11 @@ const MainSettingsPanel: React.FC = () => {
   );
 };
 
-// eslint-disable-next-line
-// @ts-ignore // Temp.
-// eslint-disable-next-line
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
+    animf: {
+      animationDuration: "5s",
+    },
     paper: {},
     graphRoot: {
       background: "red",
@@ -102,11 +168,40 @@ const useStyles = makeStyles((theme: Theme) =>
 
       boxSizing: "border-box",
     },
-    animatedItem: {
-      animation: `$myEffect 3000ms ${theme.transitions.easing.easeInOut}`,
+    empty: {},
+    graph4: {
+      background: "rgba(55,85,112,0.46)",
+      opacity: "",
+      border: "solid 0rem",
+      borderColor: "none",
+      borderRadius: "calc(1.24rem * 1.1)",
+      boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
+
+      order: 3,
+      zIndex: -1,
+      position: "absolute",
+
+      right: "50px",
+      bottom: "50px",
+
+      width: "100px",
+      height: "8em",
+      margin: "0 -1em",
+      padding: "0 1em",
+
+      boxSizing: "border-box",
     },
-    "@keyframes myEffect": slideInLeft as any,
-    graph4: {},
+
+    graph001: {
+      position: "absolute",
+      top: "50px",
+      right: "50px",
+      order: 1,
+      width: "0.3em",
+      height: "8em",
+      background: "#47D7AC",
+      boxShadow: "0.1rem 0.1rem 0.2rem rgba(0,0,0,0.5)",
+    },
   }),
 );
 
@@ -117,6 +212,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export const Foo: React.FC = () => {
   const classes = useStyles();
   const isRunning = true;
+  return <></>;
   return (
     <div className={classes.graphRoot}>
       {/* <Slide
@@ -134,13 +230,13 @@ export const Foo: React.FC = () => {
             </Slide> */}
 
       <Slide
-        direction="right"
+        direction="left"
         in={isRunning}
         timeout={1000}
         mountOnEnter
         unmountOnExit
       >
-        <div className={classes.graph2}></div>
+        <div className={classes.graph4}></div>
       </Slide>
     </div>
   );
@@ -156,7 +252,6 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
     setIsRunning(!isRunning);
   };
 
-  console.log("---->", slideInLeft, slideFoo, SlideFooDiv);
   return (
     <>
       <Panel icon={<Filter1Icon />} title={props.name}>
@@ -171,17 +266,16 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
           onChange={(v) => setSecondaryText(v)}
         />
         <Button onClick={start}>Hello</Button>
-        <Foo />
         <FormTimers label={`${props.name} Times`} />
       </Panel>
-      <Card
+      <Card2
         primaryText={primaryText}
         secondaryText={secondaryText}
         align="right"
         anim={{
           animType: "style-1",
           animDurationMs: 4000,
-          activeDurationMs: 5000,
+          activeDurationMs: 500,
         }}
         titleStyle={{
           fontFamily: "Fira Code, monospace",
@@ -194,6 +288,28 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
           color: "#8A8A8A",
         }}
       />
+      {true && (
+        <Card
+          primaryText={primaryText}
+          secondaryText={secondaryText}
+          align="right"
+          anim={{
+            animType: "style-1",
+            animDurationMs: 4000,
+            activeDurationMs: 500,
+          }}
+          titleStyle={{
+            fontFamily: "Fira Code, monospace",
+            fontSize: "1.6em",
+            color: "#F2F2F2",
+          }}
+          textStyle={{
+            fontFamily: "Fira Code, monospace",
+            fontSize: "1.4em",
+            color: "#8A8A8A",
+          }}
+        />
+      )}
     </>
   );
 };
