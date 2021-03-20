@@ -7,12 +7,14 @@ import ControlPanel from "./ControlPanel";
 import Multi from "./Multi";
 
 import { useSpring, animated } from "react-spring";
-import { Keyframes } from "react-spring/renderprops";
+//import { Keyframes } from "react-spring/renderprops";
 
-function App1() {
+//import AppM from "./AppM";
+
+export const App1: React.FC = () => {
   const props = useSpring({ opacity: 1, from: { opacity: 0 } });
   return <animated.div style={props}>I will fade in</animated.div>;
-}
+};
 
 const App: React.FC = () => {
   return (

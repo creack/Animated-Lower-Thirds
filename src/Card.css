@@ -222,7 +222,6 @@ body {
 .alt {
   display: flex;
   align-items: center;
-  justify-content: center;
   position: absolute;
   transition: left 0.1s, bottom 0.1s, right 0.1s;
 }
