@@ -114,6 +114,7 @@ body {
   }
   50% {
     opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
   75% {
     transform: translate3d(0, 0, 0);
@@ -243,9 +244,6 @@ body {
 
 .right > .text-content > .text-mask {
   text-align: right;
-}
-.center > .text-content > .text-mask {
-  text-align: center;
 }
 
 /* Title/Name. */

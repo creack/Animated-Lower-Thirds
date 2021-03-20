@@ -2,7 +2,7 @@ import type { Property } from "csstype";
 import React, { useEffect, useState } from "react";
 import "./Card.css";
 
-type TextStyle = {
+export type TextStyle = {
   fontFamily?: string;
   fontSize?: string;
   fontWeight?: Property.FontWeight;
@@ -18,7 +18,7 @@ type Animation = {
   activeDurationMs: number;
 };
 
-type CardProps = {
+export type CardProps = {
   primaryText: string;
   secondaryText: string;
 

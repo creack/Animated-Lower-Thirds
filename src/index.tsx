@@ -14,42 +14,8 @@ ReactDOM.render(
   <>
     <React.StrictMode>
       <CssBaseline />
-      <div
-        style={{
-          height: window.innerHeight,
-          width: window.innerWidth,
-        }}
-      >
-        <Container
-          style={{
-            position: "absolute",
-            bottom: "250px",
-            right: "0",
-          }}
-        >
-          <App />
-        </Container>
-        <Card
-          primaryText={"hello"}
-          secondaryText={"world"}
-          align="right"
-          anim={{
-            animType: "style-1",
-            animDurationMs: 4000,
-            activeDurationMs: 500,
-          }}
-          titleStyle={{
-            fontFamily: "Fira Code, monospace",
-            fontSize: "1.6em",
-            color: "#F2F2F2",
-          }}
-          textStyle={{
-            fontFamily: "Fira Code, monospace",
-            fontSize: "1.4em",
-            color: "#8A8A8A",
-          }}
-        />
-      </div>
+
+      <App />
     </React.StrictMode>
   </>,
   document.getElementById("root"),
