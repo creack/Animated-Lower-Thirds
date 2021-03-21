@@ -66,11 +66,12 @@ type CardProps = {
     horizontal: Property.Margin;
   };
 
+  borders?: borderProps;
+
   logo?: logoProps;
   graphOne?: graphOneProps;
   graphTwo?: graphTwoProps;
-} & shadowProps &
-  borderProps;
+} & shadowProps;
 
 const StyleOneLogo: React.FC<{ logo?: logoProps } & flexProps> = ({
   order,
@@ -205,7 +206,7 @@ const StyleOneGraphTwo: React.FC<
   );
 };
 
-const StyleOneTextContent: React.FC<flexProps> = ({ order, children }) => (
+const StyleOneTextWrapper: React.FC<flexProps> = ({ order, children }) => (
   <div
     style={{
       order: order,
@@ -218,11 +219,63 @@ const StyleOneTextContent: React.FC<flexProps> = ({ order, children }) => (
   </div>
 );
 
-const StyleOneTextPrimary: React.FC<
+const StyleOneTextContent: React.FC<
   {
-    style?: textStyleProps;
+    defaultStyle: textStyleProps;
+    keyFrameTimes?: [number, number, number];
     marginBottom?: Property.MarginBottom;
+    style?: textStyleProps;
   } & shadowProps
+> = ({
+  children,
+  defaultStyle,
+  keyFrameTimes,
+  marginBottom,
+  shadowOpacity,
+  style,
+}) => {
+  const motionConfig = useContext(MotionConfigContext);
+
+  return (
+    <div
+      style={{
+        height: `calc(${style?.fontSize || defaultStyle.fontSize}) + 0.25em`,
+        marginBottom: marginBottom,
+        overflow: "hidden",
+        textAlign: "right",
+        transition: "margin 0.1s height 0.1s",
+      }}
+    >
+      <motion.div
+        style={{
+          ...defaultStyle,
+
+          display: "inline-flex",
+          padding: "0 0.2rem",
+          position: "relative",
+          transition: "font-size 0.1s",
+
+          textShadow: !shadowOpacity
+            ? "none"
+            : `0.1rem 0.1rem 0.2rem rgba(0, 0, 0, ${shadowOpacity}}`,
+
+          ...style,
+        }}
+        initial={{ right: "-102%" }}
+        animate={{ right: ["-102%", "-102%", "0%"] }}
+        transition={{
+          ...(motionConfig.transition as Keyframes),
+          times: keyFrameTimes,
+        }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+};
+
+const StyleOneTextPrimary: React.FC<
+  { style?: textStyleProps; marginBottom?: Property.MarginBottom } & shadowProps
 > = ({ children, marginBottom, style, shadowOpacity } = {}) => {
   const motionConfig = useContext(MotionConfigContext);
 
@@ -237,8 +290,8 @@ const StyleOneTextPrimary: React.FC<
   return (
     <div
       style={{
-        marginBottom: marginBottom || "0.2em",
         height: `calc(${style?.fontSize || defaultStyle.fontSize}) + 0.25em`,
+        marginBottom: marginBottom || "0.2em",
         overflow: "hidden",
         textAlign: "right",
         transition: "margin 0.1s height 0.1s",
@@ -248,10 +301,10 @@ const StyleOneTextPrimary: React.FC<
         style={{
           ...defaultStyle,
 
-          position: "relative",
           display: "inline-flex",
-          transition: "font-size 0.1s",
           padding: "0 0.2rem",
+          position: "relative",
+          transition: "font-size 0.1s",
 
           textShadow: !shadowOpacity
             ? "none"
@@ -273,8 +326,8 @@ const StyleOneTextPrimary: React.FC<
 };
 
 const StyleOneTextSecondary: React.FC<
-  { style?: textStyleProps } & shadowProps
-> = ({ children, style, shadowOpacity }) => {
+  { style?: textStyleProps; marginBottom?: Property.MarginBottom } & shadowProps
+> = ({ children, style, marginBottom, shadowOpacity }) => {
   const motionConfig = useContext(MotionConfigContext);
 
   const defaultStyle: textStyleProps = {
@@ -289,6 +342,7 @@ const StyleOneTextSecondary: React.FC<
     <div
       style={{
         height: `calc(${style?.fontSize || defaultStyle.fontSize}) + 0.25em`,
+        marginBottom: marginBottom || "0em",
         overflow: "hidden",
         textAlign: "right",
         transition: "height 0.1s",
@@ -298,10 +352,10 @@ const StyleOneTextSecondary: React.FC<
         style={{
           ...defaultStyle,
 
-          position: "relative",
           display: "inline-flex",
-          transition: "font-size 0.1s",
           padding: "0 0.2rem",
+          position: "relative",
+          transition: "font-size 0.1s",
 
           textShadow: !shadowOpacity
             ? "none"
@@ -322,59 +376,91 @@ const StyleOneTextSecondary: React.FC<
   );
 };
 
-const StyleOne: React.FC<CardProps> = (props) => {
-  const motionConfig: Transition = {
-    duration: props.durationInSecs || 4,
-    repeat: 1,
-    repeatDelay: 5,
-    repeatType: "reverse",
-    ease: [0.19, 0.76, 0.32, 1], // Cubic-bezier params..
-  };
-
-  return (
-    <MotionConfig transition={motionConfig}>
-      <div
-        style={{
-          fontSize: props.cardSize || "24px",
-          bottom: props.margins?.vertical || "4rem",
-          right: props.margins?.horizontal || "4rem",
-          flexDirection: "row-reverse",
-          display: "flex",
-          alignItems: "center",
-          position: "absolute",
-          transition: "left 0.1s, bottom 0.1s right 0.1s",
-        }}
-      >
-        <StyleOneLogo order={0} logo={props.logo} />
-        <StyleOneGraphOne
-          order={1}
-          {...props.graphOne}
-          shadowOpacity={props.shadowOpacity}
-        />
-        <StyleOneTextContent order={2}>
-          <StyleOneTextPrimary
-            style={props.primaryText?.style}
-            marginBottom={props.lineSpacing}
-            shadowOpacity={props.shadowOpacity}
-          >
-            {props.primaryText?.value}
-          </StyleOneTextPrimary>
-          <StyleOneTextSecondary
-            style={props.secondaryText?.style}
-            shadowOpacity={props.shadowOpacity}
-          >
-            {props.secondaryText?.value}
-          </StyleOneTextSecondary>
-        </StyleOneTextContent>
-        <StyleOneGraphTwo
-          order={3}
-          {...props.graphTwo}
-          shadowOpacity={props.shadowOpacity}
-        />
-      </div>
-    </MotionConfig>
-  );
+const primaryDefaultStyle: textStyleProps = {
+  color: "#F2F2F2",
+  fontFamily: "Open Sans, sans-serif",
+  fontSize: "1.9em",
+  fontWeight: "bold",
+  textTransform: "uppercase",
 };
+
+const secondaryDefaultStyle: textStyleProps = {
+  color: "#8A8A8A",
+  fontFamily: "Open Sans, sans-serif",
+  fontSize: "1.1em",
+  fontWeight: "lighter",
+  textTransform: "none",
+};
+
+const StyleOne: React.FC<CardProps> = (props) => (
+  <MotionConfig
+    transition={{
+      duration: props.durationInSecs || 4,
+      repeat: 1,
+      repeatDelay: 5,
+      repeatType: "reverse",
+      ease: [0.19, 0.76, 0.32, 1], // Cubic-bezier params.
+    }}
+  >
+    <div
+      style={{
+        fontSize: props.cardSize || "24px",
+        bottom: props.margins?.vertical || "4rem",
+        right: props.margins?.horizontal || "4rem",
+        flexDirection: "row-reverse",
+        display: "flex",
+        alignItems: "center",
+        position: "absolute",
+        transition: "left 0.1s, bottom 0.1s right 0.1s",
+      }}
+    >
+      <StyleOneLogo order={0} logo={props.logo} />
+      <StyleOneGraphOne
+        order={1}
+        {...props.graphOne}
+        shadowOpacity={props.shadowOpacity}
+      />
+      <StyleOneTextWrapper order={2}>
+        {/* <StyleOneTextPrimary
+              style={props.primaryText?.style}
+              marginBottom={props.lineSpacing}
+              shadowOpacity={props.shadowOpacity}
+              >
+              {props.primaryText?.value}
+              </StyleOneTextPrimary>
+              <StyleOneTextSecondary
+              style={props.secondaryText?.style}
+              shadowOpacity={props.shadowOpacity}
+              >
+              {props.secondaryText?.value}
+              </StyleOneTextSecondary> */}
+        <StyleOneTextContent
+          defaultStyle={primaryDefaultStyle}
+          style={props.primaryText?.style}
+          marginBottom={props.lineSpacing || "0.2em"}
+          shadowOpacity={props.shadowOpacity}
+          keyFrameTimes={[0, 0.45, 1]}
+        >
+          {props.primaryText?.value}
+        </StyleOneTextContent>
+        <StyleOneTextContent
+          defaultStyle={secondaryDefaultStyle}
+          style={props.secondaryText?.style}
+          shadowOpacity={props.shadowOpacity}
+          keyFrameTimes={[0, 0.5, 1]}
+        >
+          {props.secondaryText?.value}
+        </StyleOneTextContent>
+      </StyleOneTextWrapper>
+      <StyleOneGraphTwo
+        order={3}
+        {...props.graphTwo}
+        {...props.borders}
+        shadowOpacity={props.shadowOpacity}
+      />
+    </div>
+  </MotionConfig>
+);
 
 const Card: React.FC = () => (
   <StyleOne
@@ -405,6 +491,9 @@ const Card: React.FC = () => (
     margins={{ horizontal: "2rem", vertical: "6rem" }}
     lineSpacing={0}
     shadowOpacity={0.5}
+    borders={{
+      borderRadius: "1.24em",
+    }}
   />
 );
 
