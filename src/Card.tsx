@@ -161,8 +161,8 @@ const Card: React.FC<CardProps> = (props) => {
         className={`alt ${props.align} ${props.anim.animType} ${curAnimClass}`}
         style={{ ...fontStyle }}
       >
-        <div className="logo no-logo" style={{ ...animationStyle }}>
-          <img src="//:0" style={{ maxHeight: props.logoMaxHeigh }} />
+        <div className="logo " style={{ ...animationStyle }}>
+          <img src="marketing-4.gif" style={{ maxHeight: "8em" }} />
         </div>
 
         <div style={{ ...animationStyle, ...style1.graph1 }}></div>
