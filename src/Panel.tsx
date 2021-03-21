@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 type panelPropTypes = {
-  title: React.ReactNode;
+  title: string;
   icon?: React.ReactNode;
 
   handleActiveChange?: (isActive: boolean) => void;
@@ -94,7 +94,7 @@ const Panel: React.FC<panelPropTypes> = (props) => {
   const isActive = isLocalActive && useContext(MainSettingsContext).isActive;
 
   return (
-    <GridRoot container direction="column">
+    <GridRoot container direction="column" style={{ overflow: "hidden" }}>
       <TopBar
         {...props}
         active={[isActive, setIsActive]}
@@ -110,9 +110,27 @@ const Panel: React.FC<panelPropTypes> = (props) => {
           {isActive && !isFolded && (
             <motion.div
               layout
+              key={props.title}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              variants={{
+                show: {
+                  opacity: 1,
+                  transition: {
+                    delay: 1,
+                    duration: 1.2,
+                    ease: [0.83, 0, 0.17, 1],
+                  },
+                },
+                hidden: {
+                  opacity: 0,
+                  transition: {
+                    duration: 1.2,
+                    ease: [0.83, 0, 0.17, 1],
+                  },
+                },
+              }}
             >
               {props.children}
             </motion.div>

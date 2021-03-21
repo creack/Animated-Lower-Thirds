@@ -12,6 +12,8 @@ import FormTimers from "./FormTimers";
 import { MainSettingsContext } from "./MainSettingsContext";
 import Panel from "./Panel";
 
+import { AnimateSharedLayout } from "framer-motion";
+
 const MainSettingsPanel: React.FC<{
   handleActiveChange?: (isActive: boolean) => void;
 }> = (props) => (
@@ -81,14 +83,23 @@ const ControlPanel: React.FC = () => {
           isActive: globalIsActive,
         }}
       >
-        <Grid container direction="column" spacing={1}>
-          <Grid item sm>
-            <MainSettingsPanel handleActiveChange={handleGlobalActiveChange} />
+        <AnimateSharedLayout>
+          <Grid
+            container
+            direction="column"
+            spacing={1}
+            style={{ overflow: "hidden" }}
+          >
+            <Grid item sm>
+              <MainSettingsPanel
+                handleActiveChange={handleGlobalActiveChange}
+              />
+            </Grid>
+            <Grid item sm>
+              <Card1Panel name="Card1" />
+            </Grid>
           </Grid>
-          <Grid item sm>
-            <Card1Panel name="Card1" />
-          </Grid>
-        </Grid>
+        </AnimateSharedLayout>
       </MainSettingsContext.Provider>
     </div>
   );
