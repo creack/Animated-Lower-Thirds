@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 // Styles/CSS/Theme.
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 // Layout components.
@@ -13,6 +13,7 @@ import {
 
 import Duration, { unitOfTime } from "./lib/duration";
 import FormSimpleInput from "./FormSimpleInput";
+import { MainSettingsContext } from "./MainSettingsContext";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -36,6 +37,8 @@ type propTypes = {
 
 const FormTimers: React.FC<propTypes> = (props) => {
   const classes = useStyles();
+
+  const mainSettings = useContext(MainSettingsContext);
 
   const [easeInOutDuration, setEaseInOutDuration] = useState<Duration>(
     new Duration(4, unitOfTime.Second),

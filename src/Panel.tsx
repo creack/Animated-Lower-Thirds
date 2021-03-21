@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 // Styles/CSS/Theme.
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 // Layout components.
-import { Grid, Paper, Switch, Collapse } from "@material-ui/core";
+import { Grid, Paper, Switch } from "@material-ui/core";
 // Icons.
 import {
   UnfoldLess as UnfoldLessIcon,
   UnfoldMore as UnfoldMoreIcon,
 } from "@material-ui/icons";
+import { MainSettingsContext } from "./MainSettingsContext";
+
+import { motion, AnimatePresence } from "framer-motion";
+import styled from "styled-components";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    topBarGridRoot: {
-      //paddingBottom: theme.spacing(1),
-    },
-    gridRoot: {},
     paperRoot: {
       padding: theme.spacing(1),
       color: theme.palette.text.secondary,
@@ -29,6 +29,8 @@ const useStyles = makeStyles((theme: Theme) =>
 type panelPropTypes = {
   title: React.ReactNode;
   icon?: React.ReactNode;
+
+  handleActiveChange?: (isActive: boolean) => void;
 };
 
 type topBarPropTypes = panelPropTypes & {
@@ -36,9 +38,11 @@ type topBarPropTypes = panelPropTypes & {
   folded: [boolean, React.Dispatch<React.SetStateAction<boolean>> | null];
 };
 
-const TopBar: React.FC<topBarPropTypes> = (props) => {
-  const classes = useStyles();
+const GridTopBarRoot = styled(Grid)`
+  background: yellow;
+`;
 
+const TopBar: React.FC<topBarPropTypes> = (props) => {
   const [isActive, setIsActive] = props.active;
   const [isFolded, setIsFolded] = props.folded;
 
@@ -53,12 +57,7 @@ const TopBar: React.FC<topBarPropTypes> = (props) => {
   );
 
   return (
-    <Grid
-      container
-      justify="space-between"
-      alignItems="center"
-      className={classes.topBarGridRoot}
-    >
+    <GridTopBarRoot container justify="space-between" alignItems="center">
       <Grid container item sm={10} alignItems="center">
         {props.icon}
         {props.title}
@@ -70,32 +69,57 @@ const TopBar: React.FC<topBarPropTypes> = (props) => {
           size="small"
           checked={isActive}
           color="primary"
-          onChange={() => setIsActive(!isActive)}
+          onChange={() => {
+            setIsActive(!isActive);
+            props.handleActiveChange?.(!isActive);
+          }}
         />
       </Grid>
-    </Grid>
+    </GridTopBarRoot>
   );
 };
+
+const GridRoot = styled(Grid)`
+  background: blue;
+`;
 
 const Panel: React.FC<panelPropTypes> = (props) => {
   const classes = useStyles();
 
   const activeState = useState<boolean>(true);
   const foldedState = useState<boolean>(false);
-  const [isActive] = activeState;
+  const [isLocalActive, setIsActive] = activeState;
   const [isFolded] = foldedState;
 
+  const isActive = isLocalActive && useContext(MainSettingsContext).isActive;
+
   return (
-    <Paper className={isActive ? classes.paperRoot : classes.paperDisabled}>
-      <Grid container direction="column" className={classes.gridRoot}>
-        <TopBar
-          {...props}
-          active={activeState}
-          folded={isActive ? foldedState : [true, null]}
-        />
-        <Collapse in={isActive && !isFolded}>{props.children}</Collapse>
-      </Grid>
-    </Paper>
+    <GridRoot container direction="column">
+      <TopBar
+        {...props}
+        active={[isActive, setIsActive]}
+        folded={isActive ? foldedState : [true, null]}
+        handleActiveChange={props.handleActiveChange}
+      />
+      <motion.div
+        style={{ background: "pink" }}
+        layout
+        initial={{ borderRadius: 10 }}
+      >
+        <AnimatePresence>
+          {isActive && !isFolded && (
+            <motion.div
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {props.children}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </GridRoot>
   );
 };
 

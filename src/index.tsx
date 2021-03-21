@@ -1,10 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import App from "./AppM";
+import App from "./App";
 import { CssBaseline, Container } from "@material-ui/core";
-
-import Card from "./Card";
 
 //import "./index.css";
 
@@ -14,8 +12,9 @@ ReactDOM.render(
   <>
     <React.StrictMode>
       <CssBaseline />
-
-      <App />
+      <Container>
+        <App />
+      </Container>
     </React.StrictMode>
   </>,
   document.getElementById("root"),
