@@ -1,41 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Card, { TextStyle, CardProps } from "./Card";
-import { useMotionValue, useTransform } from "framer-motion";
 
-import {
-  Filter1 as Filter1Icon,
-  Settings as SettingsIcon,
-} from "@material-ui/icons";
-
-const Orig: React.FC<{ duration: number }> = ({ duration }) => (
-  <Card
-    primaryText={"Quick Tip: Check out the config files on Github!"}
-    secondaryText={"https://github.com/creack/dotfiles"}
-    align="right"
-    anim={{
-      animType: "style-1",
-      animDurationMs: duration * 1000,
-      activeDurationMs: 500,
-    }}
-    titleStyle={{
-      fontFamily: "Fira Code, monospace",
-      fontSize: "1.4em",
-      fontWeight: "bold",
-      color: "#F2F2F2",
-    }}
-    textStyle={{
-      fontFamily: "Fira Code, monospace",
-      fontSize: "1.5em",
-      fontWeight: "lighter",
-      color: "#8A8A8A",
-    }}
-  />
-);
+type CardProps = {
+  duration?: number | string;
+  primaryText: string;
+  secondaryText: string;
+};
 
 const CardBackground: React.FC<CardProps> = (props) => {
-  const duration = 4;
-
+  const duration = props.duration || 4;
+  const repeatType = "reverse";
   return (
     <div
       style={{
@@ -79,6 +53,9 @@ const CardBackground: React.FC<CardProps> = (props) => {
             ease: [0.19, 0.76, 0.32, 1],
             times: [0, 0.55, 1],
             duration: duration,
+            repeat: 1,
+            repeatDelay: 5,
+            repeatType: repeatType,
           }}
         />
       </div>
@@ -105,6 +82,9 @@ const CardBackground: React.FC<CardProps> = (props) => {
           ease: [0.19, 0.76, 0.32, 1],
           times: [0, 0.25, 0.5, 0.75, 1],
           duration: duration,
+          repeat: 1,
+          repeatDelay: 5,
+          repeatType: repeatType,
         }}
       />
 
@@ -144,9 +124,12 @@ const CardBackground: React.FC<CardProps> = (props) => {
               ease: [0.19, 0.76, 0.32, 1],
               times: [0, 0.45, 1],
               duration: duration,
+              repeat: 1,
+              repeatDelay: 5,
+              repeatType: repeatType,
             }}
           >
-            Quick Tip: Check out the config files on Github!
+            {props.primaryText}
           </motion.div>
         </div>
         <div
@@ -177,9 +160,12 @@ const CardBackground: React.FC<CardProps> = (props) => {
               ease: [0.19, 0.76, 0.32, 1],
               times: [0, 0.5, 1],
               duration: duration,
+              repeat: 1,
+              repeatDelay: 5,
+              repeatType: repeatType,
             }}
           >
-            https://github.com/creack/dotfiles
+            {props.secondaryText}
           </motion.div>
         </div>
       </div>
@@ -220,55 +206,21 @@ const CardBackground: React.FC<CardProps> = (props) => {
           times: [0, 0.3, 1],
           ease: [0.19, 0.76, 0.32, 1],
           duration: duration,
+
+          repeat: 1,
+          repeatDelay: 5,
+          repeatType: repeatType,
         }}
       />
     </div>
   );
 };
 
-const CardBackground0: React.FC = (props) => (
-  <div
-    style={{
-      width: "100%",
-      height: "100%",
-      position: "absolute",
-      overflow: "hidden",
-    }}
-  >
-    <div
-      style={{
-        position: "absolute",
-        bottom: "400px",
-        height: "300px",
-        width: "100%",
-      }}
-    >
-      <Orig duration={4} />
-    </div>
-    <CardBackground
-      {...props}
-      primaryText={"Quick Tip: Check out the config files on Github!"}
-      secondaryText={"https://github.com/creack/dotfiles"}
-      align="right"
-      anim={{
-        animType: "style-1",
-        animDurationMs: 4000,
-        activeDurationMs: 500,
-      }}
-      titleStyle={{
-        fontFamily: "Fira Code, monospace",
-        fontWeight: "bold",
-        fontSize: "1.4em",
-        color: "#F2F2F2",
-      }}
-      textStyle={{
-        fontFamily: "Fira Code, monospace",
-        fontWeight: "lighter",
-        fontSize: "1.6em",
-        color: "#8A8A8A",
-      }}
-    />
-  </div>
+const Card: React.FC = () => (
+  <CardBackground
+    primaryText="Quick Tip: Check out the config files on Github!"
+    secondaryText="https://github.com/creack/dotfiles"
+  />
 );
 
-export default CardBackground0;
+export default Card;
