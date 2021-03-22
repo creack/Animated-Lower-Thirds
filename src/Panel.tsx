@@ -1,146 +1,143 @@
-import React, { useContext, useState } from "react";
-// Styles/CSS/Theme.
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 // Layout components.
-import { Grid, Paper, Switch } from "@material-ui/core";
+import { Grid, Switch } from "@material-ui/core";
 // Icons.
 import {
   UnfoldLess as UnfoldLessIcon,
   UnfoldMore as UnfoldMoreIcon,
 } from "@material-ui/icons";
-import { MainSettingsContext } from "./MainSettingsContext";
-
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paperRoot: {
-      padding: theme.spacing(1),
-      color: theme.palette.text.secondary,
-    },
-    paperDisabled: {
-      padding: theme.spacing(1),
-      background: theme.palette.action.disabled,
-    },
-  }),
-);
+import { withTheme, Theme } from "@material-ui/core/styles";
 
-type panelPropTypes = {
-  title: string;
-  icon?: React.ReactNode;
+const TopBarRoot = withTheme(styled(Grid)<{ disabled?: boolean }>`
+  margin-bottom: 1px;
+  background: ${(props: { theme: Theme; disabled?: boolean }) =>
+    props.disabled
+      ? props.theme.palette.action.disabledBackground
+      : props.theme.palette.background.default};
+`);
 
-  handleActiveChange?: (isActive: boolean) => void;
-};
+// Either jsut an Icon, or just a text (as string or jsx), or icon + text (as string or jsx).
+type TopBarTitleType =
+  | JSX.Element
+  | string
+  | [JSX.Element, JSX.Element | string];
 
-type topBarPropTypes = panelPropTypes & {
-  active: [boolean, React.Dispatch<React.SetStateAction<boolean>>];
-  folded: [boolean, React.Dispatch<React.SetStateAction<boolean>> | null];
-};
+export const TopBar: React.FC<{
+  isEnabled: boolean;
+  isVisible: boolean;
+  toggleIsEnabled: () => void;
+  toggleIsVisible: () => void;
 
-const GridTopBarRoot = styled(Grid)`
-  background: yellow;
-`;
-
-export const TopBar: React.FC<topBarPropTypes> = (props) => {
-  const [isActive, setIsActive] = props.active;
-  const [isFolded, setIsFolded] = props.folded;
-
-  const foldIcon = (
-    <div
-      onClick={() => {
-        setIsFolded?.(!isFolded);
-      }}
-    >
-      {!isFolded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
+  children: TopBarTitleType;
+}> = ({ isEnabled, isVisible, toggleIsEnabled, toggleIsVisible, children }) => {
+  const FoldIcon = () => (
+    <div onClick={toggleIsVisible}>
+      {!isVisible ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
     </div>
   );
 
   return (
-    <GridTopBarRoot container justify="space-between" alignItems="center">
-      <Grid container item sm={10} alignItems="center">
-        {props.icon}
-        {props.title}
-      </Grid>
-
-      <Grid container item sm={2} justify="flex-end" alignItems="center">
-        {foldIcon}
-        <Switch
-          size="small"
-          checked={isActive}
-          color="primary"
-          onChange={() => {
-            setIsActive(!isActive);
-            props.handleActiveChange?.(!isActive);
-          }}
-        />
-      </Grid>
-    </GridTopBarRoot>
-  );
-};
-
-export const TopBar0: React.FC<topBarPropTypes> = (props) => {
-  const [isActive, setIsActive] = props.active;
-  const [isFolded, setIsFolded] = props.folded;
-
-  const foldIcon = (
-    <div
-      onClick={() => {
-        setIsFolded?.(!isFolded);
-      }}
+    <TopBarRoot
+      disabled={!isEnabled}
+      container
+      justify="space-between"
+      alignItems="center"
     >
-      {!isFolded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
-    </div>
-  );
-
-  return (
-    <GridTopBarRoot container justify="space-between" alignItems="center">
       <Grid container item sm={10} alignItems="center">
-        {props.icon}
-        {props.title}
+        {children}
       </Grid>
-
       <Grid container item sm={2} justify="flex-end" alignItems="center">
-        {foldIcon}
+        <FoldIcon />
         <Switch
           size="small"
-          checked={isActive}
+          checked={isEnabled}
           color="primary"
-          onChange={() => {
-            setIsActive(!isActive);
-            props.handleActiveChange?.(!isActive);
-          }}
+          onChange={toggleIsEnabled}
         />
       </Grid>
-    </GridTopBarRoot>
+    </TopBarRoot>
   );
 };
 
-const GridRoot = styled(Grid)`
-  background: blue;
+const PanelRootDiv = styled.div`
+  margin-bottom: 10px;
 `;
 
-const Panel: React.FC<panelPropTypes> = (props) => {
-  const classes = useStyles();
+const PanelContentDiv = styled(motion.div)`
+  overflow: hidden;
+`;
 
-  const activeState = useState<boolean>(true);
-  const foldedState = useState<boolean>(false);
-  const [isLocalActive, setIsActive] = activeState;
-  const [isFolded] = foldedState;
+type panelState = { enabled: boolean; visible: boolean };
 
-  const isActive = isLocalActive && useContext(MainSettingsContext).isActive;
+type PanelProps = {
+  handleVisibilityChange?: (s: boolean) => void;
+  handleEnabledChange?: (s: boolean) => void;
+  children: [
+    React.ReactElement<TopBarTitleType> | string,
+    React.ReactElement | string,
+  ];
+} & Partial<panelState>;
 
+export const Panel: React.FC<PanelProps> = ({
+  children,
+  handleEnabledChange,
+  handleVisibilityChange,
+  enabled,
+  visible,
+}) => {
+  const [isEnabled, setIsEnabled] = useState<boolean>(enabled ?? false);
+  const [isVisible, setIsVisible] = useState<boolean>(visible ?? false);
+
+  const toggleIsEnabled = () => {
+    const v = !isEnabled;
+    setIsEnabled(v);
+    handleEnabledChange?.(v);
+  };
+  const toggleIsVisible = () => {
+    if (!isEnabled) return;
+    const v = !isVisible;
+    setIsVisible(v);
+    handleVisibilityChange?.(v);
+  };
+
+  useEffect(() => {
+    if (enabled != isEnabled) setIsEnabled(enabled ?? isEnabled);
+    if (visible != isVisible) setIsVisible(visible ?? isVisible);
+  }, [enabled, visible]);
+
+  // By using `AnimatePresence` to mount and unmount the contents, we can animate
+  // them in and out while also only rendering the contents of open accordions
   return (
-    <GridRoot container direction="column" style={{ overflow: "hidden" }}>
+    <PanelRootDiv>
       <TopBar
-        {...props}
-        active={[isActive, setIsActive]}
-        folded={isActive ? foldedState : [true, null]}
-        handleActiveChange={props.handleActiveChange}
-      />
-
-      {props.children}
-    </GridRoot>
+        isEnabled={isEnabled}
+        isVisible={isEnabled && isVisible}
+        toggleIsEnabled={toggleIsEnabled}
+        toggleIsVisible={toggleIsVisible}
+      >
+        {children[0]}
+      </TopBar>
+      <AnimatePresence initial={false}>
+        {isVisible && (
+          <PanelContentDiv
+            key="content"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            variants={{
+              open: { opacity: 1, height: "auto" },
+              collapsed: { opacity: 0, height: 0 },
+            }}
+            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+          >
+            {children[1]}
+          </PanelContentDiv>
+        )}
+      </AnimatePresence>
+    </PanelRootDiv>
   );
 };
 

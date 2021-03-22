@@ -1,117 +1,124 @@
-import { Grid, Switch } from "@material-ui/core";
-import {
-  Settings as SettingsIcon,
-  UnfoldLess as UnfoldLessIcon,
-  UnfoldMore as UnfoldMoreIcon,
-} from "@material-ui/icons";
-import { AnimatePresence, motion } from "framer-motion";
-import React, { useState } from "react";
-import styled from "styled-components";
-import FormTimers from "./FormTimers";
+import { Settings as SettingsIcon } from "@material-ui/icons";
+import React, { useContext, useEffect, useState } from "react";
+import FormTimers, { timersState } from "./FormTimers";
+import { defaultValues, MainSettingsContext } from "./MainSettingsContext";
+import Panel from "./Panel";
 
-// Either jsut an Icon, or just a text (as string or jsx), or icon + text (as string or jsx).
-type TopBarTitleType =
-  | JSX.Element
-  | string
-  | [JSX.Element, JSX.Element | string];
-
-const TopBarRootDiv = styled.div`
-  margin-bottom: 1px;
-`;
-
-const PanelContentDiv = styled(motion.div)`
-  overflow: hidden;
-`;
-
-const PanelRootDiv = styled.div`
-  margin-bottom: 10px;
-`;
-
-const TopBar: React.FC<{
-  expanded: boolean;
-  setExpanded: (v: boolean) => void;
-
-  children: TopBarTitleType;
-}> = ({ expanded, setExpanded, children }) => {
-  const FoldIcon = () => (
-    <div onClick={() => setExpanded(!expanded)}>
-      {!expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
-    </div>
-  );
-
-  return (
-    <TopBarRootDiv>
-      <Grid container justify="space-between" alignItems="center">
-        <Grid container item sm={10} alignItems="center">
-          {children}
-        </Grid>
-        <Grid container item sm={2} justify="flex-end" alignItems="center">
-          <FoldIcon />
-          <Switch
-            size="small"
-            checked={expanded}
-            color="primary"
-            onChange={() => {
-              setExpanded(!expanded);
-            }}
-          />
-        </Grid>
-      </Grid>
-    </TopBarRootDiv>
-  );
+type Settings = {
+  enabled: boolean;
+  visible: boolean;
+  timersState: Partial<timersState>;
 };
 
-type PanelProps = {
-  children: [
-    React.ReactElement<TopBarTitleType> | string,
-    React.ReactElement | string,
-  ];
+type MainSettings = Settings & {
+  timersState: Required<timersState>;
 };
 
-const Panel: React.FC<PanelProps> = ({ children }) => {
-  const [expanded, setExpanded] = useState<boolean>(false);
-  const isOpen = expanded;
+type CardSettings = Partial<Settings>;
 
-  // By using `AnimatePresence` to mount and unmount the contents, we can animate
-  // them in and out while also only rendering the contents of open accordions
-  return (
-    <PanelRootDiv>
-      <TopBar expanded={expanded} setExpanded={setExpanded}>
-        {children[0]}
-      </TopBar>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <PanelContentDiv
-            key="content"
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            variants={{
-              open: { opacity: 1, height: "auto" },
-              collapsed: { opacity: 0, height: 0 },
-            }}
-            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
-          >
-            {children[1]}
-          </PanelContentDiv>
-        )}
-      </AnimatePresence>
-    </PanelRootDiv>
-  );
-};
+export const MainSettingsPanel: React.FC<{
+  setStateContext: (s: MainSettings) => void;
+}> = (props) => {
+  const ctx = useContext(MainSettingsContext);
 
-export const Example: React.FC = () => {
+  const [state, setState] = useState<MainSettings>(ctx);
+
+  const setTimersState: (s: Partial<timersState>) => void = (durations) => {
+    setState({ ...state, timersState: { ...state.timersState, ...durations } });
+  };
+
+  const setEnableState = (v: boolean) => {
+    setState({ ...state, enabled: v });
+  };
+  const setVisibleState = (v: boolean) => {
+    setState({ ...state, visible: v });
+  };
+
+  useEffect(() => {
+    props.setStateContext({ ...state });
+  }, [state]);
+
   return (
     <>
-      <Panel>
+      <Panel
+        handleEnabledChange={setEnableState}
+        handleVisibilityChange={setVisibleState}
+        enabled={state.enabled}
+        visible={state.visible}
+      >
         <>
           <SettingsIcon />
           Main Settings
         </>
-        <FormTimers label="Global Times" />
+        <FormTimers
+          label="Global Times"
+          handleChange={setTimersState}
+          timersState={state.timersState}
+        />
       </Panel>
+      <div>{JSON.stringify(state)}</div>
     </>
   );
 };
 
-export default Example;
+export const Card0: React.FC = () => {
+  const mainSettings = useContext(MainSettingsContext);
+
+  const [state, setState] = useState<CardSettings>();
+
+  const setTimersState: (s: Partial<timersState>) => void = (durations) => {
+    setState({
+      ...state,
+      timersState: { ...state?.timersState, ...durations },
+    });
+  };
+
+  const setEnableState = (v: boolean) => {
+    if (!mainSettings.enabled) return;
+    setState({ ...state, enabled: v });
+  };
+  const setVisibleState = (v: boolean) => {
+    if (!mainSettings.enabled) return;
+    setState({ ...state, visible: v });
+  };
+
+  return (
+    <>
+      <Panel
+        handleEnabledChange={setEnableState}
+        handleVisibilityChange={setVisibleState}
+        enabled={
+          (mainSettings.enabled && state?.enabled) ?? mainSettings.enabled
+        }
+        visible={
+          (mainSettings.enabled && state?.visible) ?? mainSettings.visible
+        }
+      >
+        <>
+          <SettingsIcon />
+          Card0 Settings
+        </>
+        <FormTimers
+          label="Card0 Times"
+          handleChange={setTimersState}
+          timersState={{ ...mainSettings.timersState, ...state?.timersState }}
+        />
+      </Panel>
+      <div>{JSON.stringify(state)}</div>
+    </>
+  );
+};
+
+const Foo: React.FC = () => {
+  const [state, setState] = useState<MainSettings>(defaultValues);
+  //        <MainSettingsPanel setStateContext={setState} />
+  return (
+    <div>
+      <MainSettingsContext.Provider value={state}>
+        <Card0 />
+      </MainSettingsContext.Provider>
+    </div>
+  );
+};
+
+export default Foo;

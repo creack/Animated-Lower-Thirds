@@ -10,21 +10,13 @@ import AppM from "./AppM";
 import FormSimpleInput from "./FormSimpleInput";
 import FormTimers from "./FormTimers";
 import { MainSettingsContext } from "./MainSettingsContext";
-import Panel from "./Panel";
+import { Panel } from "./Panel";
 
 import { AnimateSharedLayout } from "framer-motion";
 
 export const MainSettingsPanel: React.FC<{
   handleActiveChange?: (isActive: boolean) => void;
-}> = (props) => (
-  <Panel
-    icon={<SettingsIcon />}
-    title="Main Settings"
-    handleActiveChange={props.handleActiveChange}
-  >
-    <FormTimers label="Global Times" />
-  </Panel>
-);
+}> = (props) => <></>;
 
 const Card1Panel: React.FC<{ name: string }> = (props) => {
   const [primaryText, setMainText] = useState<string>("Hello");
@@ -32,7 +24,7 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
   const [isLocalActive, setIsActive] = useState<boolean>(true);
 
   const mainSettings = useContext(MainSettingsContext);
-  const isActive = isLocalActive && mainSettings.isActive;
+  const isActive = isLocalActive && mainSettings.enabled;
 
   const handleActiveChange = (isActive: boolean) => {
     setIsActive(isActive);
@@ -45,22 +37,24 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
 
   return (
     <>
-      <Panel
-        icon={<Filter1Icon />}
-        title={props.name}
-        handleActiveChange={handleActiveChange}
-      >
-        <FormSimpleInput
-          label="Main text"
-          value={primaryText}
-          onChange={(v) => setMainText(v)}
-        />
-        <FormSimpleInput
-          label="Secondary text"
-          value={secondaryText}
-          onChange={(v) => setSecondaryText(v)}
-        />
-        <FormTimers label={`${props.name} Times`} />
+      <Panel>
+        <>
+          <Filter1Icon />
+          {props.name}
+        </>
+        <>
+          <FormSimpleInput
+            label="Main text"
+            value={primaryText}
+            onChange={(v) => setMainText(v)}
+          />
+          <FormSimpleInput
+            label="Secondary text"
+            value={secondaryText}
+            onChange={(v) => setSecondaryText(v)}
+          />
+          {/* <FormTimers label={`${props.name} Times`} /> */}
+        </>
       </Panel>
       {!isActive ? null : (
         <AppM primaryText={primaryText} secondaryText={secondaryText} />
@@ -78,29 +72,21 @@ const ControlPanel: React.FC = () => {
 
   return (
     <div className="ControlPanel">
-      <MainSettingsContext.Provider
-        value={{
-          isActive: globalIsActive,
-        }}
-      >
-        <AnimateSharedLayout>
-          <Grid
-            container
-            direction="column"
-            spacing={1}
-            style={{ overflow: "hidden" }}
-          >
-            <Grid item sm>
-              <MainSettingsPanel
-                handleActiveChange={handleGlobalActiveChange}
-              />
-            </Grid>
-            <Grid item sm>
-              <Card1Panel name="Card1" />
-            </Grid>
+      <AnimateSharedLayout>
+        <Grid
+          container
+          direction="column"
+          spacing={1}
+          style={{ overflow: "hidden" }}
+        >
+          <Grid item sm>
+            <MainSettingsPanel handleActiveChange={handleGlobalActiveChange} />
           </Grid>
-        </AnimateSharedLayout>
-      </MainSettingsContext.Provider>
+          <Grid item sm>
+            <Card1Panel name="Card1" />
+          </Grid>
+        </Grid>
+      </AnimateSharedLayout>
     </div>
   );
 };
