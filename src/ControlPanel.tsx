@@ -14,7 +14,7 @@ import Panel from "./Panel";
 
 import { AnimateSharedLayout } from "framer-motion";
 
-const MainSettingsPanel: React.FC<{
+export const MainSettingsPanel: React.FC<{
   handleActiveChange?: (isActive: boolean) => void;
 }> = (props) => (
   <Panel

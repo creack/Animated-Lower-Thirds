@@ -23,6 +23,7 @@ type shadowProps = {
 type borderProps = {
   borderColor?: Property.BorderColor;
   borderRadius?: Property.BorderRadius;
+
   borderWidth?: Property.BorderWidth;
 };
 

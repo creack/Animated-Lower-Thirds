@@ -1,74 +1,117 @@
-import React from "react";
-import { useState } from "react";
-import { motion, AnimateSharedLayout, AnimatePresence } from "framer-motion";
-//import "./styles.css";
-
+import { Grid, Switch } from "@material-ui/core";
+import {
+  Settings as SettingsIcon,
+  UnfoldLess as UnfoldLessIcon,
+  UnfoldMore as UnfoldMoreIcon,
+} from "@material-ui/icons";
+import { AnimatePresence, motion } from "framer-motion";
+import React, { useState } from "react";
 import styled from "styled-components";
+import FormTimers from "./FormTimers";
 
-const Ul = styled(motion.ul)`
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  background: white;
-  padding: 20px;
-  border-radius: 25px;
+// Either jsut an Icon, or just a text (as string or jsx), or icon + text (as string or jsx).
+type TopBarTitleType =
+  | JSX.Element
+  | string
+  | [JSX.Element, JSX.Element | string];
+
+const TopBarRootDiv = styled.div`
+  margin-bottom: 1px;
 `;
 
-const Li = styled(motion.li)`
-  background-color: rgba(214, 214, 214, 0.5);
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
+const PanelContentDiv = styled(motion.div)`
   overflow: hidden;
-  cursor: pointer;
 `;
 
-const Row = styled.div`
-  width: 100%;
-  height: 8px;
-  background-color: #999;
-  border-radius: 10px;
-  margin-top: 12px;
+const PanelRootDiv = styled.div`
+  margin-bottom: 10px;
 `;
 
-export default function App(): JSX.Element {
-  return (
-    <AnimateSharedLayout>
-      <Ul layout initial={{ borderRadius: 25 }}>
-        {items.map((item) => (
-          <Item key={item} />
-        ))}
-      </Ul>
-    </AnimateSharedLayout>
+const TopBar: React.FC<{
+  expanded: boolean;
+  setExpanded: (v: boolean) => void;
+
+  children: TopBarTitleType;
+}> = ({ expanded, setExpanded, children }) => {
+  const FoldIcon = () => (
+    <div onClick={() => setExpanded(!expanded)}>
+      {!expanded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
+    </div>
   );
-}
-
-function Item() {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleOpen = () => setIsOpen(!isOpen);
 
   return (
-    <Li layout onClick={toggleOpen} initial={{ borderRadius: 10 }}>
-      <motion.div className="avatar" layout />
-      <AnimatePresence>{isOpen && <Content />}</AnimatePresence>
-    </Li>
+    <TopBarRootDiv>
+      <Grid container justify="space-between" alignItems="center">
+        <Grid container item sm={10} alignItems="center">
+          {children}
+        </Grid>
+        <Grid container item sm={2} justify="flex-end" alignItems="center">
+          <FoldIcon />
+          <Switch
+            size="small"
+            checked={expanded}
+            color="primary"
+            onChange={() => {
+              setExpanded(!expanded);
+            }}
+          />
+        </Grid>
+      </Grid>
+    </TopBarRootDiv>
   );
-}
+};
 
-function Content() {
+type PanelProps = {
+  children: [
+    React.ReactElement<TopBarTitleType> | string,
+    React.ReactElement | string,
+  ];
+};
+
+const Panel: React.FC<PanelProps> = ({ children }) => {
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const isOpen = expanded;
+
+  // By using `AnimatePresence` to mount and unmount the contents, we can animate
+  // them in and out while also only rendering the contents of open accordions
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      <Row>Hello</Row>
-      <Row>Foo</Row>
-      <Row>Bar</Row>
-    </motion.div>
+    <PanelRootDiv>
+      <TopBar expanded={expanded} setExpanded={setExpanded}>
+        {children[0]}
+      </TopBar>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <PanelContentDiv
+            key="content"
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
+            variants={{
+              open: { opacity: 1, height: "auto" },
+              collapsed: { opacity: 0, height: 0 },
+            }}
+            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+          >
+            {children[1]}
+          </PanelContentDiv>
+        )}
+      </AnimatePresence>
+    </PanelRootDiv>
   );
-}
+};
 
-const items = [0, 1, 2];
+export const Example: React.FC = () => {
+  return (
+    <>
+      <Panel>
+        <>
+          <SettingsIcon />
+          Main Settings
+        </>
+        <FormTimers label="Global Times" />
+      </Panel>
+    </>
+  );
+};
+
+export default Example;

@@ -42,7 +42,44 @@ const GridTopBarRoot = styled(Grid)`
   background: yellow;
 `;
 
-const TopBar: React.FC<topBarPropTypes> = (props) => {
+export const TopBar: React.FC<topBarPropTypes> = (props) => {
+  const [isActive, setIsActive] = props.active;
+  const [isFolded, setIsFolded] = props.folded;
+
+  const foldIcon = (
+    <div
+      onClick={() => {
+        setIsFolded?.(!isFolded);
+      }}
+    >
+      {!isFolded ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
+    </div>
+  );
+
+  return (
+    <GridTopBarRoot container justify="space-between" alignItems="center">
+      <Grid container item sm={10} alignItems="center">
+        {props.icon}
+        {props.title}
+      </Grid>
+
+      <Grid container item sm={2} justify="flex-end" alignItems="center">
+        {foldIcon}
+        <Switch
+          size="small"
+          checked={isActive}
+          color="primary"
+          onChange={() => {
+            setIsActive(!isActive);
+            props.handleActiveChange?.(!isActive);
+          }}
+        />
+      </Grid>
+    </GridTopBarRoot>
+  );
+};
+
+export const TopBar0: React.FC<topBarPropTypes> = (props) => {
   const [isActive, setIsActive] = props.active;
   const [isFolded, setIsFolded] = props.folded;
 
@@ -101,42 +138,8 @@ const Panel: React.FC<panelPropTypes> = (props) => {
         folded={isActive ? foldedState : [true, null]}
         handleActiveChange={props.handleActiveChange}
       />
-      <motion.div
-        style={{ background: "pink" }}
-        layout
-        initial={{ borderRadius: 10 }}
-      >
-        <AnimatePresence>
-          {isActive && !isFolded && (
-            <motion.div
-              layout
-              key={props.title}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              variants={{
-                show: {
-                  opacity: 1,
-                  transition: {
-                    delay: 1,
-                    duration: 1.2,
-                    ease: [0.83, 0, 0.17, 1],
-                  },
-                },
-                hidden: {
-                  opacity: 0,
-                  transition: {
-                    duration: 1.2,
-                    ease: [0.83, 0, 0.17, 1],
-                  },
-                },
-              }}
-            >
-              {props.children}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+
+      {props.children}
     </GridRoot>
   );
 };
