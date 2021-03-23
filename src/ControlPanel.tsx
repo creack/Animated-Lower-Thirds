@@ -37,7 +37,7 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
 
   return (
     <>
-      <Panel>
+      <Panel cardId="-1">
         <>
           <Filter1Icon />
           {props.name}

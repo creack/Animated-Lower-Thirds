@@ -4,6 +4,8 @@ import React, { useContext, useEffect, useState } from "react";
 import FormTimers, { timersState } from "./FormTimers";
 import { defaultValues, MainSettingsContext } from "./MainSettingsContext";
 import Panel from "./Panel";
+import { useAppDispatch, useAppSelector } from "./app/store";
+import { createCard, selectCardById } from "./features/cards/cardsSlice";
 
 type Settings = {
   enabled: boolean;
@@ -15,7 +17,7 @@ type MainSettings = Settings & {
   timersState: Required<timersState>;
 };
 
-type CardSettings = Partial<Settings>;
+//type CardSettings = Partial<Settings>;
 
 export const MainSettingsPanel: React.FC<{
   setStateContext: (s: MainSettings) => void;
@@ -49,12 +51,7 @@ export const MainSettingsPanel: React.FC<{
 
   return (
     <>
-      <Panel
-        handleEnabledChange={setEnableState}
-        handleVisibilityChange={setVisibleState}
-        enabled={state.enabled}
-        visible={state.visible}
-      >
+      <Panel cardId="0">
         <>
           <SettingsIcon />
           Main Settings
@@ -70,62 +67,41 @@ export const MainSettingsPanel: React.FC<{
   );
 };
 
-export const Card0: React.FC = () => {
-  const mainSettings = useContext(MainSettingsContext);
-
-  const [state, setState] = useState<CardSettings>();
-
-  const setTimersState: (s: Partial<timersState>) => void = (durations) => {
-    setState({
-      ...state,
-      timersState: { ...state?.timersState, ...durations },
-    });
-  };
-
-  const setEnableState = (v: boolean) => {
-    if (!mainSettings.enabled) return;
-    setState({ ...state, enabled: v });
-  };
-  const setVisibleState = (v: boolean) => {
-    if (!mainSettings.enabled) return;
-    setState({ ...state, visible: v });
-  };
-
+export const Card0: React.FC<{ id: string }> = ({ id }) => {
+  const dispatch = useAppDispatch();
+  const card = useAppSelector((state) => selectCardById(state, id));
+  //if (!card) throw "Fail: missing card";
+  if (!card) return null;
   return (
     <>
-      <Panel
-        handleEnabledChange={setEnableState}
-        handleVisibilityChange={setVisibleState}
-        enabled={
-          (mainSettings.enabled && state?.enabled) ?? mainSettings.enabled
-        }
-        visible={
-          (mainSettings.enabled && state?.visible) ?? mainSettings.visible
-        }
-      >
+      <Panel cardId={card.id}>
         <>
           <SettingsIcon />
-          Card0 Settings
+          {`Card Settings - ${id}`}
         </>
-        <FormTimers
-          label="Card0 Times"
-          handleChange={setTimersState}
-          timersState={{ ...mainSettings.timersState, ...state?.timersState }}
-        />
+        <>{`hello ${card.primaryText}`}</>
       </Panel>
-      <div>{JSON.stringify(state)}</div>
     </>
   );
+  //<FormTimers label="Card0 Times" />
 };
 
 const Foo: React.FC = () => {
   const [state, setState] = useState<MainSettings>(defaultValues);
 
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      createCard({ id: "1", primaryText: "hellored", secondaryText: "world" }),
+    );
+  }, []);
+
   return (
     <div>
       <MainSettingsContext.Provider value={state}>
         <MainSettingsPanel setStateContext={setState} />
-        <Card0 />
+        <Card0 id="1" />
       </MainSettingsContext.Provider>
     </div>
   );

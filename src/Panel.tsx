@@ -7,8 +7,11 @@ import {
 } from "@material-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 
+import { useAppDispatch, useAppSelector } from "./app/store";
+import { selectCardById, updateCard } from "./features/cards/cardsSlice";
+
+import styled from "styled-components";
 import { withTheme, Theme } from "@material-ui/core/styles";
 
 const TopBarRoot = withTheme(styled(Grid)<{ disabled?: boolean }>`
@@ -26,26 +29,25 @@ type TopBarTitleType =
   | [JSX.Element, JSX.Element | string];
 
 export const TopBar: React.FC<{
-  isEnabled: boolean;
-  isVisible: boolean;
-  toggleIsEnabled: () => void;
-  toggleIsVisible: () => void;
-
+  cardId: string;
   children: TopBarTitleType;
-}> = ({ isEnabled, isVisible, toggleIsEnabled, toggleIsVisible, children }) => {
+}> = ({ cardId, children }) => {
+  const dispatch = useAppDispatch();
+  const card = useAppSelector((state) => selectCardById(state, cardId));
+  if (!card) return null;
+
   const FoldIcon = () => (
-    <div onClick={toggleIsVisible}>
-      {!isVisible ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
+    <div
+      onClick={() =>
+        dispatch(updateCard({ id: cardId, visible: !card.visible }))
+      }
+    >
+      {!card.visible ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
     </div>
   );
 
   return (
-    <TopBarRoot
-      disabled={!isEnabled}
-      container
-      justify="space-between"
-      alignItems="center"
-    >
+    <TopBarRoot container justify="space-between" alignItems="center">
       <Grid container item sm={10} alignItems="center">
         {children}
       </Grid>
@@ -53,9 +55,11 @@ export const TopBar: React.FC<{
         <FoldIcon />
         <Switch
           size="small"
-          checked={isEnabled}
+          checked={card.enabled ?? false}
           color="primary"
-          onChange={toggleIsEnabled}
+          onChange={() =>
+            dispatch(updateCard({ id: cardId, enabled: !card.enabled }))
+          }
         />
       </Grid>
     </TopBarRoot>
@@ -70,58 +74,24 @@ const PanelContentDiv = styled(motion.div)`
   overflow: hidden;
 `;
 
-type panelState = { enabled: boolean; visible: boolean };
-
 type PanelProps = {
-  handleVisibilityChange?: (s: boolean) => void;
-  handleEnabledChange?: (s: boolean) => void;
+  cardId: string;
   children: [
     React.ReactElement<TopBarTitleType> | string,
     React.ReactElement | string,
   ];
-} & Partial<panelState>;
+};
 
-export const Panel: React.FC<PanelProps> = ({
-  children,
-  handleEnabledChange,
-  handleVisibilityChange,
-  enabled,
-  visible,
-}) => {
-  const [isEnabled, setIsEnabled] = useState<boolean>(enabled ?? false);
-  const [isVisible, setIsVisible] = useState<boolean>(visible ?? false);
+export const Panel: React.FC<PanelProps> = ({ children, cardId }) => {
+  const card = useAppSelector((state) => selectCardById(state, cardId));
+  //if (!card) throw "Fail: missing card";
+  if (!card) return null;
 
-  const toggleIsEnabled = () => {
-    const v = !isEnabled;
-    setIsEnabled(v);
-    handleEnabledChange?.(v);
-  };
-  const toggleIsVisible = () => {
-    if (!isEnabled) return;
-    const v = !isVisible;
-    setIsVisible(v);
-    handleVisibilityChange?.(v);
-  };
-
-  useEffect(() => {
-    if (enabled != isEnabled) setIsEnabled(enabled ?? isEnabled);
-    if (visible != isVisible) setIsVisible(visible ?? isVisible);
-  }, [enabled, visible]);
-
-  // By using `AnimatePresence` to mount and unmount the contents, we can animate
-  // them in and out while also only rendering the contents of open accordions
   return (
     <PanelRootDiv>
-      <TopBar
-        isEnabled={isEnabled}
-        isVisible={isEnabled && isVisible}
-        toggleIsEnabled={toggleIsEnabled}
-        toggleIsVisible={toggleIsVisible}
-      >
-        {children[0]}
-      </TopBar>
+      <TopBar cardId={cardId}>{children[0]}</TopBar>
       <AnimatePresence initial={false}>
-        {isVisible && (
+        {card.visible && (
           <PanelContentDiv
             key="content"
             initial="collapsed"

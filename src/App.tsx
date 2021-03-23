@@ -8,9 +8,6 @@ import Presence from "./Presence";
 const theme = createMuiTheme({
   palette: {
     type: "dark",
-    action: {
-      disabledBackground: blue[500],
-    },
   },
 });
 

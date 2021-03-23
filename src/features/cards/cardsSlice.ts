@@ -6,6 +6,9 @@ interface Card {
 
   primaryText: string;
   secondaryText: string;
+
+  visible: boolean;
+  enabled: boolean;
 }
 
 const cardsAdapter = createEntityAdapter<Card>({
@@ -19,18 +22,24 @@ export const slice = createSlice({
   initialState,
   reducers: {
     createCard(state, action) {
-      cardsAdapter.addOne(state, action.payload);
+      cardsAdapter.upsertOne(state, action.payload);
     },
     updateCard(state, action) {
-      console.log(state, action);
+      const { id, visible, enabled } = action.payload;
+      const existingCard = state.entities[id];
+      if (existingCard) {
+        existingCard.visible = visible ?? existingCard.visible;
+        existingCard.enabled = enabled ?? existingCard.enabled;
+      }
     },
   },
 });
 
 export default slice.reducer;
 
-export const { createCard } = slice.actions;
+export const { createCard, updateCard } = slice.actions;
 
-export const { selectAll: selectAllCards } = cardsAdapter.getSelectors(
-  (state: RootState) => state.cards,
-);
+export const {
+  selectAll: selectAllCards,
+  selectById: selectCardById,
+} = cardsAdapter.getSelectors((state: RootState) => state.cards);
