@@ -1,21 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import App from "./Presence";
+import App from "./App";
 
-import { CssBaseline, Container } from "@material-ui/core";
-
-// Hello
-// NOTE: Material UI doesn't comply with React strict mode. It should be fixed in MaterialUI v5.
-//       Disable the strict mode for now. Needed for transitions.
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
+import store from "./app/store";
+const persistor = persistStore(store);
 
 ReactDOM.render(
   <>
     <React.StrictMode>
-      <CssBaseline />
-      <Container>
-        <App />
-      </Container>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <App />
+        </PersistGate>
+      </Provider>
     </React.StrictMode>
   </>,
   document.getElementById("root"),

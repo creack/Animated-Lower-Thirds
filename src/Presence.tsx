@@ -1,4 +1,5 @@
 import { Settings as SettingsIcon } from "@material-ui/icons";
+import { Paper } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import FormTimers, { timersState } from "./FormTimers";
 import { defaultValues, MainSettingsContext } from "./MainSettingsContext";
@@ -24,7 +25,15 @@ export const MainSettingsPanel: React.FC<{
   const [state, setState] = useState<MainSettings>(ctx);
 
   const setTimersState: (s: Partial<timersState>) => void = (durations) => {
-    setState({ ...state, timersState: { ...state.timersState, ...durations } });
+    setState({
+      ...state,
+      timersState: {
+        ...defaultValues.timersState,
+        ...Object.fromEntries(
+          Object.entries(durations).filter(([, v]) => v !== undefined),
+        ),
+      },
+    });
   };
 
   const setEnableState = (v: boolean) => {
@@ -111,10 +120,11 @@ export const Card0: React.FC = () => {
 
 const Foo: React.FC = () => {
   const [state, setState] = useState<MainSettings>(defaultValues);
-  //        <MainSettingsPanel setStateContext={setState} />
+
   return (
     <div>
       <MainSettingsContext.Provider value={state}>
+        <MainSettingsPanel setStateContext={setState} />
         <Card0 />
       </MainSettingsContext.Provider>
     </div>
