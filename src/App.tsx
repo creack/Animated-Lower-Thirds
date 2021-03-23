@@ -1,9 +1,8 @@
 import React from "react";
 import { CssBaseline, Container } from "@material-ui/core";
-import { createMuiTheme, MuiThemeProvider, Theme } from "@material-ui/core";
-import { blue, pink } from "@material-ui/core/colors";
+import { createMuiTheme, MuiThemeProvider } from "@material-ui/core";
 
-import Presence from "./Presence";
+import ControlPanel from "./Presence";
 
 const theme = createMuiTheme({
   palette: {
@@ -16,7 +15,7 @@ const App: React.FC = () => {
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Container>
-        <Presence />
+        <ControlPanel />
       </Container>
     </MuiThemeProvider>
   );

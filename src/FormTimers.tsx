@@ -12,44 +12,46 @@ import {
 } from "@material-ui/icons";
 
 import FormSimpleInput from "./FormSimpleInput";
-import { MainSettingsContext } from "./MainSettingsContext";
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(({ spacing, palette }: Theme) =>
   createStyles({
     gridRoot: {},
-    paperRoot: {
+    paperRoot: (props?: { disabled?: boolean }) => ({
       display: "flex",
       flexWrap: "wrap",
-      marginTop: theme.spacing(1),
-      padding: theme.spacing(0.5),
-    },
+      marginTop: spacing(1),
+      padding: spacing(0.5),
+      background: "inherit",
+      color: "inherit",
+    }),
     paper: {},
     abbrev: {
-      color: theme.palette.text.secondary,
+      //      color: palette.text.secondary,
     },
   }),
 );
 
-export type timersState = {
+export interface timersState {
   easeInOut: number;
   active: number;
   activeLock: boolean;
   inactive: number;
   inactiveLock: boolean;
-};
+}
 
 type propTypes = {
   label: string;
-  timersState: Partial<timersState>;
+  disabled?: boolean;
+  timersState?: Partial<timersState>;
   handleChange?: (s: Partial<timersState>) => void;
 };
 
 const FormTimers: React.FC<propTypes> = (props) => {
-  const classes = useStyles();
+  const classes = useStyles({ disabled: props.disabled ?? false });
 
   const [easeInOutDuration, setEaseInOutDuration] = useState<
     number | undefined
-  >(props.timersState.easeInOut);
+  >(props.timersState?.easeInOut);
 
   const [activeLock, setActiveLock] = useState<boolean>(
     props.timersState?.activeLock ?? false,
@@ -66,21 +68,22 @@ const FormTimers: React.FC<propTypes> = (props) => {
   );
 
   const activeLockIcon = (
-    <IconButton edge="end" onClick={() => setActiveLock(!activeLock)}>
-      {activeLock ? (
-        <LockCloseIcon fontSize="small" color="primary" />
-      ) : (
-        <LockOpenIcon fontSize="small" />
-      )}
+    <IconButton
+      size="small"
+      disabled={props.disabled}
+      onClick={() => setActiveLock(!activeLock)}
+    >
+      {activeLock ? <LockCloseIcon /> : <LockOpenIcon color="disabled" />}
     </IconButton>
   );
   const inactiveTimerIcon = (
-    <IconButton edge="end" onClick={() => setInacticeLock(!inactiveLock)}>
-      {inactiveLock ? (
-        <TimerOnIcon fontSize="small" color="primary" />
-      ) : (
-        <TimerOffIcon fontSize="small" />
-      )}
+    <IconButton
+      size="small"
+      disabled={props.disabled}
+      edge="end"
+      onClick={() => setInacticeLock(!inactiveLock)}
+    >
+      {inactiveLock ? <TimerOnIcon /> : <TimerOffIcon color="disabled" />}
     </IconButton>
   );
 
@@ -133,22 +136,21 @@ const FormTimers: React.FC<propTypes> = (props) => {
         <Grid item xs={3}>
           <FormSimpleInput
             onChange={updateDuration(setEaseInOutDuration)}
+            disabled={props.disabled}
             value={easeInOutDuration?.toFixed()}
             label="Ease in-out duration"
-            endAbornment={"sec"}
+            endAbornment={<>sec</>}
           />
         </Grid>
         <Grid item xs={3}>
           <FormSimpleInput
             onChange={updateDuration(setActiveDuration)}
-            disabled={activeLock}
+            disabled={props.disabled || activeLock}
             value={!activeLock ? activeDuration?.toFixed() : "Always active"}
             label="Active duration"
             endAbornment={
               <>
-                {!activeLock && (
-                  <Typography className={classes.abbrev}>{"sec"}</Typography>
-                )}
+                {!activeLock && "sec"}
                 {activeLockIcon}
               </>
             }
@@ -157,16 +159,12 @@ const FormTimers: React.FC<propTypes> = (props) => {
         <Grid item xs={3}>
           <FormSimpleInput
             onChange={updateDuration(setInactiveDuration)}
-            disabled={inactiveLock}
+            disabled={props.disabled || inactiveLock}
             value={!inactiveLock ? inactiveDuration?.toFixed() : "Disabled"}
             label="Inactive duration"
             endAbornment={
               <>
-                {!inactiveLock && (
-                  <Typography className={classes.abbrev}>
-                    {inactiveDuration}
-                  </Typography>
-                )}
+                {!inactiveLock && "sec"}
                 {inactiveTimerIcon}
               </>
             }

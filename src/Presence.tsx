@@ -1,11 +1,15 @@
 import { Settings as SettingsIcon } from "@material-ui/icons";
-import { Paper } from "@material-ui/core";
+import { Box, Typography, Paper } from "@material-ui/core";
 import React, { useContext, useEffect, useState } from "react";
 import FormTimers, { timersState } from "./FormTimers";
 import { defaultValues, MainSettingsContext } from "./MainSettingsContext";
 import Panel from "./Panel";
 import { useAppDispatch, useAppSelector } from "./app/store";
-import { createCard, selectCardById } from "./features/cards/cardsSlice";
+import {
+  createCard,
+  updateCard,
+  selectCardById,
+} from "./features/cards/cardsSlice";
 
 type Settings = {
   enabled: boolean;
@@ -68,22 +72,27 @@ export const MainSettingsPanel: React.FC<{
 };
 
 export const Card0: React.FC<{ id: string }> = ({ id }) => {
-  const dispatch = useAppDispatch();
   const card = useAppSelector((state) => selectCardById(state, id));
   //if (!card) throw "Fail: missing card";
+  const dispatch = useAppDispatch();
+
   if (!card) return null;
   return (
-    <>
-      <Panel cardId={card.id}>
-        <>
-          <SettingsIcon />
-          {`Card Settings - ${id}`}
-        </>
-        <>{`hello ${card.primaryText}`}</>
-      </Panel>
-    </>
+    <Panel cardId={card.id}>
+      <>
+        <SettingsIcon />
+        {`${card.name} Settings - ${card.id}`}
+      </>
+      <FormTimers
+        label="Timers"
+        disabled={!card.enabled}
+        timersState={card.timers}
+        handleChange={(timers: Partial<timersState>) => {
+          dispatch(updateCard({ id: card.id, timers }));
+        }}
+      />
+    </Panel>
   );
-  //<FormTimers label="Card0 Times" />
 };
 
 const Foo: React.FC = () => {
@@ -93,7 +102,22 @@ const Foo: React.FC = () => {
 
   useEffect(() => {
     dispatch(
-      createCard({ id: "1", primaryText: "hellored", secondaryText: "world" }),
+      createCard({
+        id: "1",
+        name: "Card0",
+        iconName: "Settings",
+        primaryText: "hellored",
+        secondaryText: "world",
+        enabled: true,
+        visible: true,
+        timers: {
+          easeInOut: 5,
+          active: 25,
+          inactive: 420,
+          activeLock: false,
+          inactiveLock: false,
+        },
+      }),
     );
   }, []);
 

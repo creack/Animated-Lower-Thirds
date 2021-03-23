@@ -1,26 +1,40 @@
+import React, { useEffect, useState } from "react";
 // Layout components.
 import { Grid, Switch } from "@material-ui/core";
+// Styles/CSS/Theme.
+import {
+  withTheme,
+  makeStyles,
+  createStyles,
+  Theme,
+  useTheme,
+} from "@material-ui/core/styles";
 // Icons.
 import {
   UnfoldLess as UnfoldLessIcon,
   UnfoldMore as UnfoldMoreIcon,
 } from "@material-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "./app/store";
 import { selectCardById, updateCard } from "./features/cards/cardsSlice";
 
-import styled from "styled-components";
-import { withTheme, Theme } from "@material-ui/core/styles";
-
-const TopBarRoot = withTheme(styled(Grid)<{ disabled?: boolean }>`
-  margin-bottom: 1px;
-  background: ${(props: { theme: Theme; disabled?: boolean }) =>
-    props.disabled
-      ? props.theme.palette.action.disabledBackground
-      : props.theme.palette.background.default};
-`);
+const useStyles = makeStyles(({ palette }: Theme) =>
+  createStyles({
+    root: (props?: { disabled?: boolean }) => ({
+      color: props?.disabled ? palette.action.disabled : palette.action.active,
+      background: props?.disabled
+        ? palette.action.disabledBackground
+        : palette.background.paper,
+    }),
+    topBarRoot: () => ({
+      marginBottom: "1px",
+    }),
+    panelContent: () => ({
+      overflow: "hidden",
+    }),
+  }),
+);
 
 // Either jsut an Icon, or just a text (as string or jsx), or icon + text (as string or jsx).
 type TopBarTitleType =
@@ -36,6 +50,8 @@ export const TopBar: React.FC<{
   const card = useAppSelector((state) => selectCardById(state, cardId));
   if (!card) return null;
 
+  const classes = useStyles({ disabled: !card.enabled });
+
   const FoldIcon = () => (
     <div
       onClick={() =>
@@ -47,7 +63,12 @@ export const TopBar: React.FC<{
   );
 
   return (
-    <TopBarRoot container justify="space-between" alignItems="center">
+    <Grid
+      className={classes.topBarRoot}
+      container
+      justify="space-between"
+      alignItems="center"
+    >
       <Grid container item sm={10} alignItems="center">
         {children}
       </Grid>
@@ -55,24 +76,16 @@ export const TopBar: React.FC<{
         <FoldIcon />
         <Switch
           size="small"
-          checked={card.enabled ?? false}
+          checked={!!card.enabled}
           color="primary"
           onChange={() =>
             dispatch(updateCard({ id: cardId, enabled: !card.enabled }))
           }
         />
       </Grid>
-    </TopBarRoot>
+    </Grid>
   );
 };
-
-const PanelRootDiv = styled.div`
-  margin-bottom: 10px;
-`;
-
-const PanelContentDiv = styled(motion.div)`
-  overflow: hidden;
-`;
 
 type PanelProps = {
   cardId: string;
@@ -87,12 +100,15 @@ export const Panel: React.FC<PanelProps> = ({ children, cardId }) => {
   //if (!card) throw "Fail: missing card";
   if (!card) return null;
 
+  const classes = useStyles({ disabled: !card.enabled });
+
   return (
-    <PanelRootDiv>
+    <div className={classes.root}>
       <TopBar cardId={cardId}>{children[0]}</TopBar>
       <AnimatePresence initial={false}>
         {card.visible && (
-          <PanelContentDiv
+          <motion.div
+            className={classes.panelContent}
             key="content"
             initial="collapsed"
             animate="open"
@@ -104,10 +120,10 @@ export const Panel: React.FC<PanelProps> = ({ children, cardId }) => {
             transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
           >
             {children[1]}
-          </PanelContentDiv>
+          </motion.div>
         )}
       </AnimatePresence>
-    </PanelRootDiv>
+    </div>
   );
 };
 
