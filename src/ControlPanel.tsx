@@ -46,12 +46,12 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
           <FormSimpleInput
             label="Main text"
             value={primaryText}
-            onChange={(v) => setMainText(v)}
+            handleChange={(v) => setMainText(v)}
           />
           <FormSimpleInput
             label="Secondary text"
             value={secondaryText}
-            onChange={(v) => setSecondaryText(v)}
+            handleChange={(v) => setSecondaryText(v)}
           />
           {/* <FormTimers label={`${props.name} Times`} /> */}
         </>

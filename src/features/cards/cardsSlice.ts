@@ -1,20 +1,12 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../../app/store";
 import type { SvgIcon } from "@material-ui/core";
-
-export type timersState = {
-  easeInOut: number;
-  active: number;
-  activeLock: boolean;
-  inactive: number;
-  inactiveLock: boolean;
-};
+import type { timersState } from "../../FormTimers";
 
 export interface Card {
   id: string;
   name: string;
   iconName?: string;
-  icon: typeof SvgIcon;
 
   primaryText: string;
   secondaryText: string;

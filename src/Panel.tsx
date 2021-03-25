@@ -48,9 +48,8 @@ export const TopBar: React.FC<{
 }> = ({ cardId, children }) => {
   const dispatch = useAppDispatch();
   const card = useAppSelector((state) => selectCardById(state, cardId));
+  const classes = useStyles({ disabled: !card?.enabled });
   if (!card) return null;
-
-  const classes = useStyles({ disabled: !card.enabled });
 
   const FoldIcon = () => (
     <div
@@ -97,10 +96,9 @@ type PanelProps = {
 
 export const Panel: React.FC<PanelProps> = ({ children, cardId }) => {
   const card = useAppSelector((state) => selectCardById(state, cardId));
+  const classes = useStyles({ disabled: !card?.enabled });
   //if (!card) throw "Fail: missing card";
   if (!card) return null;
-
-  const classes = useStyles({ disabled: !card.enabled });
 
   return (
     <div className={classes.root}>

@@ -3,7 +3,22 @@ import React, { useEffect, useState } from "react";
 // Styles/CSS/Theme.
 import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 // Form components.
-import { InputAdornment, TextField } from "@material-ui/core";
+import {
+  FormControl,
+  FormHelperText,
+  Input,
+  InputAdornment,
+  InputLabel,
+  TextField,
+  TextFieldProps,
+} from "@material-ui/core";
+
+import {
+  Lock as LockCloseIcon,
+  LockOpen as LockOpenIcon,
+  Timer as TimerOnIcon,
+  TimerOff as TimerOffIcon,
+} from "@material-ui/icons";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -11,52 +26,81 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
     },
-    inputField: {
-      fontSize: "0.8rem",
-    },
-    labelRoot: theme.typography.caption,
   }),
 );
 
-type simpleInputPropTypes = {
+type simpleInputPropTypes = Partial<TextFieldProps> & {
   value?: string;
-  startAbornment?: React.ReactNode;
-  endAbornment?: React.ReactNode;
-  inputType?: "number" | "text";
-  disabled?: boolean;
-  label?: string;
-  onChange?: (v: string) => string | void;
+  startAdornment?: React.ReactNode;
+  endAdornment?: React.ReactNode;
+  handleChange?: (v: string) => string | void;
+  InputProps?: void;
+  InputLabelProps?: void;
 };
 
-const FormSimpleInput: React.FC<simpleInputPropTypes> = (props) => {
+/*
+<FormControl>
+  <InputLabel htmlFor="my-input">Email address</InputLabel>
+  <Input id="my-input" aria-describedby="my-helper-text" />
+  <FormHelperText id="my-helper-text">We'll never share your email.</FormHelperText>
+</FormControl>
+ */
+
+const FormSimpleInput: React.FC<simpleInputPropTypes> = ({
+  value,
+  onChange,
+  onBlur,
+
+  handleChange,
+  startAdornment,
+  endAdornment,
+  ...props
+}): JSX.Element => {
   const classes = useStyles();
-  const [localValue, setLocalValue] = useState<string>(props.value || "");
-  useEffect(() => setLocalValue(props.value || ""), [props.value]);
+  const [localValue, setLocalValue] = useState<string>(value ?? "");
+  useEffect(() => setLocalValue(value ?? ""), [value]);
+
+  // return (
+  //   <FormControl>
+  //     <InputLabel htmlFor="my-input">Email address</InputLabel>
+  //     <Input
+  //       id="my-input"
+  //       aria-describedby="my-helper-text"
+  //       endAdornment={
+  //         <InputAdornment position="end">
+  //           <TimerOffIcon />
+  //         </InputAdornment>
+  //       }
+  //     />
+  //     <FormHelperText id="my-helper-text">
+  //       We'll never share your email.
+  //     </FormHelperText>
+  //   </FormControl>
+  // );
 
   return (
     <TextField
-      onChange={(ev) => setLocalValue(ev.target.value)}
-      onBlur={(ev) =>
-        setLocalValue(props.onChange?.(ev.target.value) || ev.target.value)
-      }
+      variant={"filled"}
+      fullWidth={true}
       value={localValue}
-      type={props.inputType}
-      disabled={props.disabled}
-      className={classes.textField}
-      size="small"
-      label={props.label}
+      onChange={(ev) => {
+        setLocalValue(ev.target.value);
+        onChange?.(ev);
+      }}
+      onBlur={(ev) => {
+        setLocalValue(handleChange?.(ev.target.value) || ev.target.value);
+        onBlur?.(ev);
+      }}
       InputProps={{
-        classes: { input: classes.inputField },
-        startAdornment: props.startAbornment && (
-          <InputAdornment position="start">
-            {props.startAbornment}
-          </InputAdornment>
+        startAdornment: startAdornment && (
+          <InputAdornment position="start">{startAdornment}</InputAdornment>
         ),
-        endAdornment: props.endAbornment && (
-          <InputAdornment position="end">{props.endAbornment}</InputAdornment>
+        endAdornment: endAdornment && (
+          <InputAdornment position="end">{endAdornment}</InputAdornment>
         ),
       }}
-      InputLabelProps={{ shrink: true, classes: { root: classes.labelRoot } }}
+      InputLabelProps={{ shrink: true }}
+      {...props}
     />
   );
 };
