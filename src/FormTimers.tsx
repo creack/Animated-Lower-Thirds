@@ -20,10 +20,10 @@ const useStyles = makeStyles(({ spacing }: Theme) =>
         //border: "1px solid pink",
       },
       "& .MuiInputBase-input": {
-        border: "1px solid lightblue",
+        //border: "1px solid lightblue",
       },
       "& .MuiInputLabel-root": {
-        border: "1px solid pink",
+        //border: "1px solid pink",
       },
 
       display: "flex",
@@ -45,13 +45,12 @@ export interface timersState {
 }
 
 type propTypes = {
-  label: string;
   disabled?: boolean;
   timersState?: Partial<timersState>;
   handleChange?: (s: Partial<timersState>) => void;
 };
 
-const FormTimers: React.FC<propTypes> = (props) => {
+const FormTimers: React.FC<propTypes> = (props): React.ReactElement => {
   const classes = useStyles({ disabled: props.disabled ?? false });
 
   const [easeInOutDuration, setEaseInOutDuration] = useState(
@@ -75,6 +74,7 @@ const FormTimers: React.FC<propTypes> = (props) => {
   const activeLockIcon = (
     <IconButton
       disabled={props.disabled}
+      edge="end"
       onClick={() => setActiveLock(!activeLock)}
     >
       {activeLock ? <LockCloseIcon /> : <LockOpenIcon color="disabled" />}
@@ -100,73 +100,62 @@ const FormTimers: React.FC<propTypes> = (props) => {
     return n.toFixed();
   };
 
-  useEffect(() => {
-    return;
-    setActiveLock(props.timersState?.activeLock ?? activeLock);
-    setInacticeLock(props.timersState?.inactiveLock ?? inactiveLock);
-    setActiveDuration(props.timersState?.active ?? activeDuration);
-    setInactiveDuration(props.timersState?.inactive ?? inactiveDuration);
-    setEaseInOutDuration(props.timersState?.easeInOut ?? easeInOutDuration);
-  }, [props.timersState]);
-
-  useEffect(() => {
-    return;
-    props.handleChange?.({
-      easeInOut: easeInOutDuration,
-      active: activeDuration,
-      activeLock: activeLock,
-      inactive: inactiveDuration,
-      inactiveLock: inactiveLock,
-    });
-  }, [
-    easeInOutDuration,
-    activeLock,
-    activeDuration,
-    inactiveLock,
-    inactiveDuration,
-  ]);
+  //  useEffect(() => {
+  //    return;
+  //    setActiveLock(props.timersState?.activeLock ?? activeLock);
+  //    setInacticeLock(props.timersState?.inactiveLock ?? inactiveLock);
+  //    setActiveDuration(props.timersState?.active ?? activeDuration);
+  //    setInactiveDuration(props.timersState?.inactive ?? inactiveDuration);
+  //    setEaseInOutDuration(props.timersState?.easeInOut ?? easeInOutDuration);
+  //  }, [props.timersState]);
+  //
+  //  useEffect(() => {
+  //    return;
+  //    props.handleChange?.({
+  //      easeInOut: easeInOutDuration,
+  //      active: activeDuration,
+  //      activeLock: activeLock,
+  //      inactive: inactiveDuration,
+  //      inactiveLock: inactiveLock,
+  //    });
+  //  }, [
+  //    easeInOutDuration,
+  //    activeLock,
+  //    activeDuration,
+  //    inactiveLock,
+  //    inactiveDuration,
+  //  ]);
 
   return (
     <Paper className={classes.root}>
       <Grid container justify="space-between" alignItems="center" spacing={1}>
-        <Grid item xs>
-          {props.label}
-        </Grid>
-        <Grid item xs>
+        <Grid item xs={4}>
           <FormSimpleInput
             handleChange={updateDuration(setEaseInOutDuration)}
             disabled={props.disabled}
             value={easeInOutDuration?.toFixed()}
             label="Ease in-out duration"
-            endAdornment={<>sec</>}
+            startAdornment="sec"
           />
         </Grid>
-        <Grid item xs>
+        <Grid item xs={4}>
           <FormSimpleInput
             handleChange={updateDuration(setActiveDuration)}
             disabled={props.disabled || activeLock}
             value={!activeLock ? activeDuration?.toFixed() : "Always active"}
             label="Active duration"
-            endAdornment={
-              <>
-                {!activeLock && "sec"}
-                {activeLockIcon}
-              </>
-            }
+            startAdornment={!activeLock && "sec"}
+            endAdornment={activeLockIcon}
           />
         </Grid>
-        <Grid item xs>
+        <Grid item xs={4}>
           <FormSimpleInput
             handleChange={updateDuration(setInactiveDuration)}
             disabled={props.disabled || inactiveLock}
             value={!inactiveLock ? inactiveDuration?.toFixed() : "Disabled"}
             label="Inactive duration"
-            endAdornment={
-              <>
-                {!inactiveLock && "sec"}
-                {inactiveTimerIcon}
-              </>
-            }
+            startAdornment={!inactiveLock && "sec"}
+            endAdornment={inactiveTimerIcon}
           />
         </Grid>
       </Grid>

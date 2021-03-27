@@ -24,8 +24,6 @@ const App: React.FC = () => {
   );
 };
 
-//const AppAntd: React.FC = () => <DatePicker />;
-
 export default App;
 
 /*

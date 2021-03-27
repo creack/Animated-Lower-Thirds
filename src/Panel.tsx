@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 // Layout components.
-import { Grid, Switch } from "@material-ui/core";
+import { Grid, Switch, Box } from "@material-ui/core";
 // Styles/CSS/Theme.
 import {
   withTheme,
@@ -29,6 +29,9 @@ const useStyles = makeStyles(({ palette }: Theme) =>
     }),
     topBarRoot: () => ({
       marginBottom: "1px",
+      " & .MuiGrid-item": {
+        //border: "1px solid blue",
+      },
     }),
     panelContent: () => ({
       overflow: "hidden",
@@ -44,11 +47,18 @@ type TopBarTitleType =
 
 export const TopBar: React.FC<{
   cardId: string;
+  canBeEnabled: boolean;
   children: TopBarTitleType;
-}> = ({ cardId, children }) => {
+}> = ({ cardId, canBeEnabled, children }) => {
   const dispatch = useAppDispatch();
   const card = useAppSelector((state) => selectCardById(state, cardId));
-  const classes = useStyles({ disabled: !card?.enabled });
+
+  useEffect(() => {
+    return;
+  }, [canBeEnabled]);
+
+  const classes = useStyles({ disabled: !canBeEnabled || !card?.enabled });
+
   if (!card) return null;
 
   const FoldIcon = () => (
@@ -61,6 +71,8 @@ export const TopBar: React.FC<{
     </div>
   );
 
+  console.log("Rerender topbar", canBeEnabled);
+
   return (
     <Grid
       className={classes.topBarRoot}
@@ -68,18 +80,24 @@ export const TopBar: React.FC<{
       justify="space-between"
       alignItems="center"
     >
-      <Grid container item sm={10} alignItems="center">
+      <Grid container item xs={6} alignItems="center">
         {children}
       </Grid>
-      <Grid container item sm={2} justify="flex-end" alignItems="center">
+      <Grid container item xs={6} justify="flex-end" alignItems="center">
+        {!canBeEnabled && (
+          <Box fontWeight="light" fontSize="0.2em" fontStyle="italic">
+            *Disabled in Main Settings.
+          </Box>
+        )}
         <FoldIcon />
         <Switch
           size="small"
-          checked={!!card.enabled}
+          checked={canBeEnabled && !!card.enabled}
           color="primary"
-          onChange={() =>
-            dispatch(updateCard({ id: cardId, enabled: !card.enabled }))
-          }
+          onChange={() => {
+            if (!canBeEnabled) return;
+            dispatch(updateCard({ id: cardId, enabled: !card.enabled }));
+          }}
         />
       </Grid>
     </Grid>
@@ -88,21 +106,30 @@ export const TopBar: React.FC<{
 
 type PanelProps = {
   cardId: string;
+  canBeEnabled?: boolean;
   children: [
     React.ReactElement<TopBarTitleType> | string,
     React.ReactElement | string,
   ];
 };
 
-export const Panel: React.FC<PanelProps> = ({ children, cardId }) => {
+export const Panel: React.FC<PanelProps> = ({
+  children,
+  canBeEnabled = true,
+  cardId,
+}) => {
   const card = useAppSelector((state) => selectCardById(state, cardId));
-  const classes = useStyles({ disabled: !card?.enabled });
+  const classes = useStyles({
+    disabled: !canBeEnabled || !card?.enabled,
+  });
   //if (!card) throw "Fail: missing card";
   if (!card) return null;
 
   return (
     <div className={classes.root}>
-      <TopBar cardId={cardId}>{children[0]}</TopBar>
+      <TopBar cardId={cardId} canBeEnabled={canBeEnabled}>
+        {children[0]}
+      </TopBar>
       <AnimatePresence initial={false}>
         {card.visible && (
           <motion.div

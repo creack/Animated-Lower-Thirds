@@ -11,6 +11,7 @@ import {
   selectCardById,
 } from "./features/cards/cardsSlice";
 import FormSimpleInput from "./FormSimpleInput";
+import Icons from "./Icons";
 
 type Settings = {
   enabled: boolean;
@@ -25,9 +26,10 @@ type MainSettings = Settings & {
 //type CardSettings = Partial<Settings>;
 
 export const MainSettingsPanel: React.FC<{
-  setStateContext: (s: MainSettings) => void;
-}> = (props) => {
+  id?: string;
+}> = ({ id = "main" }) => {
   const ctx = useContext(MainSettingsContext);
+  const card = useAppSelector((state) => selectCardById(state, id));
 
   const [state, setState] = useState<MainSettings>(ctx);
 
@@ -43,45 +45,35 @@ export const MainSettingsPanel: React.FC<{
     });
   };
 
-  const setEnableState = (v: boolean) => {
-    setState({ ...state, enabled: v });
-  };
-  const setVisibleState = (v: boolean) => {
-    setState({ ...state, visible: v });
-  };
-
-  useEffect(() => {
-    props.setStateContext({ ...state });
-  }, [state]);
+  if (!card) return null;
 
   return (
     <>
-      <Panel cardId="0">
+      <Panel cardId={id}>
         <>
-          <SettingsIcon />
+          <Icons name={card.iconName} />
           Main Settings
         </>
         <FormTimers
-          label="Global Times"
           handleChange={setTimersState}
           timersState={state.timersState}
         />
       </Panel>
-      <div>{JSON.stringify(state)}</div>
     </>
   );
 };
 
-export const Card0: React.FC<{ id: string }> = ({ id }) => {
+export const Card: React.FC<{ id: string }> = ({ id }) => {
   const dispatch = useAppDispatch();
   const card = useAppSelector((state) => selectCardById(state, id));
+  const mainSettings = useAppSelector((state) => selectCardById(state, "main"));
   const [primaryText, setMainText] = useState<string>("Hello");
   const [secondaryText, setSecondaryText] = useState<string>("World");
 
-  if (!card) return null;
+  if (!card || !mainSettings) return null;
 
   return (
-    <Panel cardId={card.id}>
+    <Panel cardId={card.id} canBeEnabled={!!mainSettings?.enabled}>
       <>
         <SettingsIcon />
         {`${card.name} Settings - ${card.id}`}
@@ -126,7 +118,6 @@ export const Card0: React.FC<{ id: string }> = ({ id }) => {
         </Grid>
 
         <FormTimers
-          label="Timers"
           disabled={!card.enabled}
           timersState={card.timers}
           handleChange={(timers: Partial<timersState>) => {
@@ -139,11 +130,19 @@ export const Card0: React.FC<{ id: string }> = ({ id }) => {
 };
 
 const Foo: React.FC = () => {
-  const [state, setState] = useState<MainSettings>(defaultValues);
-
   const dispatch = useAppDispatch();
 
   useEffect((): void => {
+    dispatch(
+      createCard({
+        id: "main",
+        name: "Main Settings",
+        iconName: "Settings",
+        primaryText: "hellored",
+        secondaryText: "world",
+        ...defaultValues,
+      }),
+    );
     dispatch(
       createCard({
         id: "1",
@@ -154,9 +153,9 @@ const Foo: React.FC = () => {
         enabled: true,
         visible: true,
         timers: {
-          easeInOut: 5,
-          active: 25,
-          inactive: 420,
+          easeInOut: undefined,
+          active: undefined,
+          inactive: undefined,
           activeLock: false,
           inactiveLock: false,
         },
@@ -165,12 +164,10 @@ const Foo: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <MainSettingsContext.Provider value={state}>
-        <MainSettingsPanel setStateContext={setState} />
-        <Card0 id="1" />
-      </MainSettingsContext.Provider>
-    </div>
+    <>
+      <MainSettingsPanel />
+      <Card id="1" />
+    </>
   );
 };
 

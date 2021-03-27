@@ -1,38 +1,37 @@
+// Form components.
+import { InputAdornment, TextField, TextFieldProps } from "@material-ui/core";
+// Styles/CSS/Theme.
+import { createStyles, makeStyles } from "@material-ui/core/styles";
 import React, { useEffect, useState } from "react";
 
-// Styles/CSS/Theme.
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
-// Form components.
-import {
-  FormControl,
-  FormHelperText,
-  Input,
-  InputAdornment,
-  InputLabel,
-  TextField,
-  TextFieldProps,
-} from "@material-ui/core";
-
-import {
-  Lock as LockCloseIcon,
-  LockOpen as LockOpenIcon,
-  Timer as TimerOnIcon,
-  TimerOff as TimerOffIcon,
-} from "@material-ui/icons";
-
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    textField: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1),
+    root: {
+      "& .MuiIconButton-root": {
+        margin: 0,
+        padding: 0,
+      },
+    },
+    label: {
+      fontSize: "0.75em",
+    },
+    input: {
+      fontSize: "0.75em",
+    },
+    startAdornment: {
+      fontSize: "0.4em",
+      alignItems: "bottom",
     },
   }),
 );
 
 type simpleInputPropTypes = Partial<TextFieldProps> & {
   value?: string;
-  startAdornment?: React.ReactNode;
-  endAdornment?: React.ReactNode;
+  startAdornment?: string | false;
+  endAdornment?: React.ReactNode | false;
+
+  label?: string;
+
   handleChange?: (v: string) => string | void;
   InputProps?: void;
   InputLabelProps?: void;
@@ -50,38 +49,23 @@ const FormSimpleInput: React.FC<simpleInputPropTypes> = ({
   value,
   onChange,
   onBlur,
+  fullWidth,
+  label,
 
   handleChange,
-  startAdornment,
   endAdornment,
+  startAdornment,
   ...props
-}): JSX.Element => {
+}) => {
   const classes = useStyles();
   const [localValue, setLocalValue] = useState<string>(value ?? "");
   useEffect(() => setLocalValue(value ?? ""), [value]);
 
-  // return (
-  //   <FormControl>
-  //     <InputLabel htmlFor="my-input">Email address</InputLabel>
-  //     <Input
-  //       id="my-input"
-  //       aria-describedby="my-helper-text"
-  //       endAdornment={
-  //         <InputAdornment position="end">
-  //           <TimerOffIcon />
-  //         </InputAdornment>
-  //       }
-  //     />
-  //     <FormHelperText id="my-helper-text">
-  //       We'll never share your email.
-  //     </FormHelperText>
-  //   </FormControl>
-  // );
-
   return (
     <TextField
-      variant={"filled"}
-      fullWidth={true}
+      variant="filled"
+      fullWidth={fullWidth ?? true}
+      className={classes.root}
       value={localValue}
       onChange={(ev) => {
         setLocalValue(ev.target.value);
@@ -92,14 +76,18 @@ const FormSimpleInput: React.FC<simpleInputPropTypes> = ({
         onBlur?.(ev);
       }}
       InputProps={{
+        className: classes.input,
         startAdornment: startAdornment && (
-          <InputAdornment position="start">{startAdornment}</InputAdornment>
+          <InputAdornment className={classes.startAdornment} position="start">
+            <>{startAdornment}</>
+          </InputAdornment>
         ),
         endAdornment: endAdornment && (
           <InputAdornment position="end">{endAdornment}</InputAdornment>
         ),
       }}
-      InputLabelProps={{ shrink: true }}
+      label={label}
+      InputLabelProps={{ className: classes.label }}
       {...props}
     />
   );
