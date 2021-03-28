@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
-// Styles/CSS/Theme.
-import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 // Layout components.
-import { Grid, Paper, IconButton, Typography } from "@material-ui/core";
+import { Grid, IconButton, Paper } from "@material-ui/core";
+// Styles/CSS/Theme.
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 // Icons.
 import {
   Lock as LockCloseIcon,
@@ -10,7 +9,8 @@ import {
   Timer as TimerOnIcon,
   TimerOff as TimerOffIcon,
 } from "@material-ui/icons";
-
+import React, { useState } from "react";
+import { useEffect } from "react";
 import FormSimpleInput from "./FormSimpleInput";
 
 const useStyles = makeStyles(({ spacing }: Theme) =>
@@ -47,6 +47,7 @@ export interface timersState {
 type propTypes = {
   disabled?: boolean;
   timersState?: Partial<timersState>;
+  defaultTimersState: timersState;
   handleChange?: (s: Partial<timersState>) => void;
 };
 
@@ -57,19 +58,25 @@ const FormTimers: React.FC<propTypes> = (props): React.ReactElement => {
     props.timersState?.easeInOut,
   );
 
-  const [activeLock, setActiveLock] = useState(
-    props.timersState?.activeLock ?? false,
-  );
   const [activeDuration, setActiveDuration] = useState(
     props.timersState?.active,
   );
-
-  const [inactiveLock, setInacticeLock] = useState(
-    props.timersState?.inactiveLock ?? false,
+  const [localActiveLock, setActiveLock] = useState(
+    props.timersState?.activeLock,
   );
+  const activeLock =
+    localActiveLock ||
+    (activeDuration === undefined && props.defaultTimersState.activeLock);
+
   const [inactiveDuration, setInactiveDuration] = useState(
     props.timersState?.inactive,
   );
+  const [localInactiveLock, setInacticeLock] = useState(
+    props.timersState?.inactiveLock,
+  );
+  const inactiveLock =
+    localInactiveLock ||
+    (inactiveDuration === undefined && props.defaultTimersState.inactiveLock);
 
   const activeLockIcon = (
     <IconButton
@@ -100,31 +107,25 @@ const FormTimers: React.FC<propTypes> = (props): React.ReactElement => {
     return n.toFixed();
   };
 
-  //  useEffect(() => {
-  //    return;
-  //    setActiveLock(props.timersState?.activeLock ?? activeLock);
-  //    setInacticeLock(props.timersState?.inactiveLock ?? inactiveLock);
-  //    setActiveDuration(props.timersState?.active ?? activeDuration);
-  //    setInactiveDuration(props.timersState?.inactive ?? inactiveDuration);
-  //    setEaseInOutDuration(props.timersState?.easeInOut ?? easeInOutDuration);
-  //  }, [props.timersState]);
-  //
-  //  useEffect(() => {
-  //    return;
-  //    props.handleChange?.({
-  //      easeInOut: easeInOutDuration,
-  //      active: activeDuration,
-  //      activeLock: activeLock,
-  //      inactive: inactiveDuration,
-  //      inactiveLock: inactiveLock,
-  //    });
-  //  }, [
-  //    easeInOutDuration,
-  //    activeLock,
-  //    activeDuration,
-  //    inactiveLock,
-  //    inactiveDuration,
-  //  ]);
+  useEffect(() => {
+    return;
+  }, [props.timersState, props.defaultTimersState]);
+
+  useEffect(() => {
+    props.handleChange?.({
+      easeInOut: easeInOutDuration,
+      active: activeDuration,
+      activeLock: localActiveLock,
+      inactive: inactiveDuration,
+      inactiveLock: localInactiveLock,
+    });
+  }, [
+    easeInOutDuration,
+    activeDuration,
+    localActiveLock,
+    inactiveDuration,
+    localInactiveLock,
+  ]);
 
   return (
     <Paper className={classes.root}>
@@ -134,6 +135,7 @@ const FormTimers: React.FC<propTypes> = (props): React.ReactElement => {
             handleChange={updateDuration(setEaseInOutDuration)}
             disabled={props.disabled}
             value={easeInOutDuration?.toFixed()}
+            placeholder={props.defaultTimersState.easeInOut.toFixed()}
             label="Ease in-out duration"
             startAdornment="sec"
           />
@@ -143,6 +145,7 @@ const FormTimers: React.FC<propTypes> = (props): React.ReactElement => {
             handleChange={updateDuration(setActiveDuration)}
             disabled={props.disabled || activeLock}
             value={!activeLock ? activeDuration?.toFixed() : "Always active"}
+            placeholder={props.defaultTimersState.active.toFixed()}
             label="Active duration"
             startAdornment={!activeLock && "sec"}
             endAdornment={activeLockIcon}
@@ -153,6 +156,7 @@ const FormTimers: React.FC<propTypes> = (props): React.ReactElement => {
             handleChange={updateDuration(setInactiveDuration)}
             disabled={props.disabled || inactiveLock}
             value={!inactiveLock ? inactiveDuration?.toFixed() : "Disabled"}
+            placeholder={props.defaultTimersState.inactive.toFixed()}
             label="Inactive duration"
             startAdornment={!inactiveLock && "sec"}
             endAdornment={inactiveTimerIcon}

@@ -8,6 +8,28 @@ import {
 import type { Property } from "csstype";
 import styled from "styled-components";
 
+// Styles/CSS/Theme.
+import { createStyles, makeStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    primaryText: {
+      color: ({ primaryTextColor }: CardStyles1) => primaryTextColor,
+      fontFamily: "'Fira Code', monospace",
+      fontSize: "1.4em",
+      fontWeight: "bold",
+      textTransform: "none",
+    },
+    secondaryText: {
+      color: ({ secondaryTextColor }: CardStyles1) => secondaryTextColor,
+      fontFamily: "'Fira Code', monospace",
+      fontSize: "1.6em",
+      fontWeight: "lighter",
+      textTransform: "none",
+    },
+  }),
+);
+
 type textStyleProps = {
   color?: Property.Color;
   fontFamily?: Property.FontFamily;
@@ -78,7 +100,7 @@ const LogoDiv = styled.div<flexProps>`
   min-width: fit-content;
 `;
 
-const LogoImg = styled(motion.img)<{ maxHeight?: Property.MaxHeight }>`
+const LogoImg = styled(motion.img) <{ maxHeight?: Property.MaxHeight }>`
   display: flex;
   position: relative;
   transition: maxHeight: 0.1s;
@@ -260,27 +282,27 @@ const StyleOneTextContent: React.FC<
   );
 };
 
-const StyleOneDefaultPrimaryText = styled.div`
-  color: #F2F2F2;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 1.9em;
-  font-weight: bold,
-  text-transform: uppercase,
-`;
-const StyleOneDefaultSecondaryText = styled.div`
-  color: #8A8A8A;
-  font-family: 'Open Sans', sans-serif;
-  font-size: 1.1em;
-  font-weight: lighter,
-  text-transform: none,
-`;
+//const StyleOneDefaultPrimaryText = styled.div<{ color: string }>`
+//  color: ${({ color }) => color};
+//  font-family: 'Open Sans', sans-serif;
+//  font-size: 1.9em;
+//  font-weight: bold,
+//  text-transform: uppercase,
+//`;
+//const StyleOneDefaultSecondaryText = styled.div<{ color: string }>`
+//  color: ${({ color }) => color};
+//  font-family: 'Open Sans', sans-serif;
+//  font-size: 1.1em;
+//  font-weight: lighter,
+//  text-transform: none,
+//`;
 
 const StyleOne: React.FC<CardProps> = (props) => (
   <MotionConfig
     transition={{
       duration: props.durationInSecs ?? 4,
       repeat: 1,
-      repeatDelay: 500,
+      repeatDelay: 5,
       repeatType: "reverse",
       ease: [0.19, 0.76, 0.32, 1], // Cubic-bezier params.
     }}
@@ -328,38 +350,50 @@ const StyleOne: React.FC<CardProps> = (props) => (
   </MotionConfig>
 );
 
-const PrimaryText = styled(StyleOneDefaultPrimaryText)`
-  font-family: "Fira Code", monospace;
-  font-size: 1.4em;
-  text-transform: none;
-`;
+//const PrimaryText = styled(StyleOneDefaultPrimaryText)`
+//  font-family: "Fira Code", monospace;
+//  font-size: 1.4em;
+//  text-transform: none;
+//`;
+//
+//const SecondaryText = styled(StyleOneDefaultSecondaryText)`
+//  font-family: "Fira Code", monospace;
+//  font-size: 1.6em;
+//`;
 
-const SecondaryText = styled(StyleOneDefaultSecondaryText)`
-  font-family: "Fira Code", monospace;
-  font-size: 1.6em;
-`;
+export type CardStyles1 = {
+  primaryTextColor?: string;
+  secondaryTextColor?: string;
+};
 
 export type CardProps1 = {
   primaryText?: string;
   secondaryText?: string;
-};
+} & CardStyles1;
 
-const Card: React.FC<CardProps1> = (props) => (
-  <StyleOne
-    logo={{ src: "marketing-4.gif" }}
-    graphOne={{ color: "#47D7AC" }}
-    graphTwo={{ color: "rgba(55, 85, 112, 0.46)" }}
-    cardSize="14px"
-    margins={{ horizontal: "2rem", vertical: "6rem" }}
-    lineSpacing={0}
-    shadowOpacity={0.5}
-    borders={{
-      borderRadius: "1.24em",
-    }}
-  >
-    <PrimaryText>{props.primaryText}</PrimaryText>
-    <SecondaryText>{props.secondaryText}</SecondaryText>
-  </StyleOne>
-);
+const Card: React.FC<CardProps1> = (props) => {
+  const classes = useStyles({
+    primaryTextColor: props.primaryTextColor ?? "#F2F2F2",
+    secondaryTextColor: props.secondaryTextColor ?? "#8A8A8A",
+  });
+
+  return (
+    <StyleOne
+      logo={{ src: "marketing-4.gif" }}
+      graphOne={{ color: "#47D7AC" }}
+      graphTwo={{ color: "rgba(55,85,112,0.46)" }}
+      cardSize="14px"
+      margins={{ horizontal: "2rem", vertical: "6rem" }}
+      lineSpacing={0}
+      shadowOpacity={0.5}
+      borders={{
+        borderRadius: "1.24em",
+      }}
+    >
+      <div className={classes.primaryText}>{props.primaryText}</div>
+      <div className={classes.secondaryText}>{props.secondaryText}</div>
+    </StyleOne>
+  );
+};
 
 export default Card;

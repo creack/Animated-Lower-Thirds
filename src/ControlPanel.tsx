@@ -9,7 +9,6 @@ import React, { useContext, useEffect, useState } from "react";
 import AppM from "./AppM";
 import FormSimpleInput from "./FormSimpleInput";
 import FormTimers from "./FormTimers";
-import { MainSettingsContext } from "./MainSettingsContext";
 import { Panel } from "./Panel";
 
 import { AnimateSharedLayout } from "framer-motion";
@@ -23,8 +22,7 @@ const Card1Panel: React.FC<{ name: string }> = (props) => {
   const [secondaryText, setSecondaryText] = useState<string>("World");
   const [isLocalActive, setIsActive] = useState<boolean>(true);
 
-  const mainSettings = useContext(MainSettingsContext);
-  const isActive = isLocalActive && mainSettings.enabled;
+  const isActive = isLocalActive && true;
 
   const handleActiveChange = (isActive: boolean) => {
     setIsActive(isActive);

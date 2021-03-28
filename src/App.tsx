@@ -13,6 +13,7 @@ const theme = createMuiTheme({
   },
 });
 
+// Hello.
 const App: React.FC = () => {
   return (
     <MuiThemeProvider theme={theme}>
@@ -25,10 +26,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-/*
-(helm-mode)
-(require 'helm-xref)
-(define-key global-map [remap find-file] #'helm-find-files)
-(define-key global-map [remap execute-extended-command] #'helm-M-x)
-*/

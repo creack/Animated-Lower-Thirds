@@ -1,21 +1,14 @@
-import React, { useEffect, useState } from "react";
 // Layout components.
-import { Grid, Switch, Box } from "@material-ui/core";
+import { Box, Grid, Switch } from "@material-ui/core";
 // Styles/CSS/Theme.
-import {
-  withTheme,
-  makeStyles,
-  createStyles,
-  Theme,
-  useTheme,
-} from "@material-ui/core/styles";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 // Icons.
 import {
   UnfoldLess as UnfoldLessIcon,
   UnfoldMore as UnfoldMoreIcon,
 } from "@material-ui/icons";
 import { AnimatePresence, motion } from "framer-motion";
-
+import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./app/store";
 import { selectCardById, updateCard } from "./features/cards/cardsSlice";
 
@@ -64,7 +57,9 @@ export const TopBar: React.FC<{
   const FoldIcon = () => (
     <div
       onClick={() =>
-        dispatch(updateCard({ id: cardId, visible: !card.visible }))
+        dispatch(
+          updateCard({ id: cardId, changes: { visible: !card.visible } }),
+        )
       }
     >
       {!card.visible ? <UnfoldLessIcon /> : <UnfoldMoreIcon />}
@@ -96,7 +91,9 @@ export const TopBar: React.FC<{
           color="primary"
           onChange={() => {
             if (!canBeEnabled) return;
-            dispatch(updateCard({ id: cardId, enabled: !card.enabled }));
+            dispatch(
+              updateCard({ id: cardId, changes: { enabled: !card.enabled } }),
+            );
           }}
         />
       </Grid>

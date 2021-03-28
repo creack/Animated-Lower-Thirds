@@ -1,5 +1,5 @@
 import React from "react";
-import store from "./app/store";
+import { store } from "./app/store";
 import { Provider } from "react-redux";
 import App from "./App2";
 import { PersistGate } from "redux-persist/integration/react";

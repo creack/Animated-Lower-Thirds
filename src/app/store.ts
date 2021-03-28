@@ -29,7 +29,7 @@ const persistConfig = {
 
 const persistedReducer = persistReducer(persistConfig, reducers);
 
-const store = configureStore({
+export const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== "production",
   middleware: getDefaultMiddleware({
@@ -38,8 +38,6 @@ const store = configureStore({
     },
   }).concat(logger),
 });
-
-export default store;
 
 export type RootState = ReturnType<typeof store.getState>;
 

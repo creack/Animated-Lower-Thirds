@@ -15,15 +15,19 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "incremental": true,
+    "declaration": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "allowUnusedLabels": true,
     "allowUnreachableCode": true,
+    "sourceMap": true,
+    "extendedDiagnostics": true,
     "jsx": "react-jsx"
   },
   "rules": {
     "no-unused-declaration": false
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "build"]
 }
