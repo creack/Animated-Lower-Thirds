@@ -1,31 +1,105 @@
-import React, { useContext } from "react";
-import {
-  motion,
-  MotionConfig,
-  MotionConfigContext,
-  Keyframes,
-} from "framer-motion";
-import type { Property } from "csstype";
-import styled from "styled-components";
-
+import { Grid } from "@material-ui/core";
 // Styles/CSS/Theme.
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
+import type { Property } from "csstype";
+import { motion, Transition } from "framer-motion";
+import React from "react";
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles<Theme, CardStyles1>(() =>
   createStyles({
+    root: {
+      fontSize: ({ root }) => root?.fontSize ?? "24px",
+      bottom: ({ root }) => root?.bottom ?? "4rem",
+      right: ({ root }) => root?.right ?? "4rem",
+
+      flexDirection: "row-reverse",
+      display: "flex",
+      alignItems: "center",
+      position: "absolute",
+      transition: "left 0.1s, bottom 0.1s right 0.1s",
+    },
+    graphOne: {
+      order: 1,
+      minWidth: ({ graphOne }) => graphOne?.minWidth ?? "0.3em",
+      minHeight: ({ graphOne }) => graphOne?.minHeight ?? "3.5em",
+      background: ({ graphOne }) => graphOne?.color ?? "#D54141",
+      boxShadow: ({ shadowOpacity }) =>
+        !shadowOpacity
+          ? "none"
+          : `0.1rem 0.1rem 0.2rem rgba(0,0,0,${shadowOpacity})`,
+      position: "relative",
+    },
+    graphTwo: {
+      order: 3,
+      zIndex: -1,
+
+      background: ({ graphTwo }) => graphTwo?.color ?? "#222222",
+
+      border: ({ borders }) => `solid ${borders?.borderWidth ?? "0rem"}`,
+      borderColor: ({ borders }) => `${borders?.borderColor ?? "none"}`,
+      borderRadius: ({ borders }) =>
+        `calc(${borders?.borderRadius ?? "0rem"} * 1.1)`,
+      boxSizing: "border-box",
+
+      boxShadow: ({ shadowOpacity }) =>
+        !shadowOpacity
+          ? "none"
+          : `0.1rem 0.1rem 0.2rem rgba(0,0,0,${shadowOpacity})`,
+
+      position: "absolute",
+      width: "100%",
+      height: "calc(100% + 2em)",
+      margin: "0 -1em",
+      padding: "0 1em",
+
+      right: 0,
+      marginLeft: "-1.8em",
+      paddingLeft: "1.8em",
+    },
+    textRoot: {
+      order: 2,
+
+      marginBottom: ({ lineSpacing }) => lineSpacing, // Defaults to undefined.
+      overflow: "hidden",
+      textAlign: "right",
+      transition: "margin 0.1s height 0.1s",
+    },
+    textContentMotion: {
+      display: "inline-flex",
+      padding: "0 0.2rem",
+      position: "relative",
+      transition: "font-szie 0.1s",
+      textShadow: ({ shadowOpacity }) =>
+        !shadowOpacity
+          ? "none"
+          : `0.1rem 0.1rem 0.2rem rgba(0,0,0,${shadowOpacity})`,
+    },
     primaryText: {
-      color: ({ primaryTextColor }: CardStyles1) => primaryTextColor,
+      color: ({ primaryTextColor }) => primaryTextColor ?? "#F2F2F2",
       fontFamily: "'Fira Code', monospace",
       fontSize: "1.4em",
       fontWeight: "bold",
       textTransform: "none",
     },
     secondaryText: {
-      color: ({ secondaryTextColor }: CardStyles1) => secondaryTextColor,
+      color: ({ secondaryTextColor }) => secondaryTextColor ?? "#8A8A8A",
       fontFamily: "'Fira Code', monospace",
       fontSize: "1.6em",
       fontWeight: "lighter",
       textTransform: "none",
+    },
+    logoRoot: {
+      orger: 0,
+      overflow: "hidden",
+      transition: "margin 0.1s",
+      minWidth: "fit-content",
+    },
+    logo: {
+      display: "flex",
+      position: "relative",
+      transition: "maxHeight: 0.1s",
+      marginLeft: "0.8em",
+      maxHeight: ({ logoHeight }) => logoHeight ?? "8em",
     },
   }),
 );
@@ -47,10 +121,6 @@ type borderProps = {
   borderRadius?: Property.BorderRadius;
 
   borderWidth?: Property.BorderWidth;
-};
-
-type flexProps = {
-  order: Property.Order;
 };
 
 type logoProps = {
@@ -93,262 +163,100 @@ type CardProps = {
   children: [React.ReactElement<HTMLElement>, React.ReactElement<HTMLElement>];
 } & shadowProps;
 
-const LogoDiv = styled.div<flexProps>`
-  order: ${(props) => props.order};
-  overflow: hidden;
-  transition: margin 0.1s;
-  min-width: fit-content;
-`;
+const StyleOne: React.FC<CardProps> = (props) => {
+  const classes = useStyles({
+    root: {
+      fontSize: props.cardSize,
+      bottom: props.margins?.vertical,
+      right: props.margins?.horizontal,
+    },
+    graphOne: props.graphOne,
+    graphTwo: props.graphTwo,
 
-const LogoImg = styled(motion.img) <{ maxHeight?: Property.MaxHeight }>`
-  display: flex;
-  position: relative;
-  transition: maxHeight: 0.1s;
-  marginLeft: 0.8em;
-  max-height: ${(props) => props.maxHeight ?? "8em"};
-`;
+    logoHeight: props.logo?.maxHeight,
 
-const StyleOneLogo: React.FC<{ logo?: logoProps } & flexProps> = ({
-  order,
-  logo,
-}) => {
-  if (!logo) {
-    return null;
-  }
+    borders: props.borders,
+    lineSpacing: props.lineSpacing,
+    shadowOpacity: props.shadowOpacity,
+  });
 
-  const motionConfig = useContext(MotionConfigContext);
-
-  return (
-    <LogoDiv order={order}>
-      <LogoImg
-        src={logo.src}
-        maxHeight={logo.maxHeight}
-        initial={{
-          opacity: 0,
-          left: "-30%",
-        }}
-        animate={{
-          opacity: [0, 0, 1],
-          left: ["-30%", "-30%", "0%"],
-        }}
-        transition={{
-          ...(motionConfig.transition as Keyframes),
-          times: [0, 0.55, 1],
-        }}
-      />
-    </LogoDiv>
-  );
-};
-
-const StyleOneGraphOne: React.FC<graphOneProps & flexProps & shadowProps> = ({
-  order,
-  shadowOpacity,
-  ...graphOne
-}) => {
-  const motionConfig = useContext(MotionConfigContext);
+  const motionConfig: Transition = {
+    duration: props.durationInSecs ?? 4,
+    repeat: 1,
+    repeatDelay: 5,
+    repeatType: "reverse",
+    ease: [0.19, 0.76, 0.32, 1], // Cubic-bezier params.
+  };
 
   return (
-    <motion.div
-      style={{
-        order: order,
+    <Grid className={classes.root}>
+      <Grid className={classes.logoRoot}>
+        {props.logo?.src && (
+          <motion.img
+            src={props.logo.src}
+            className={classes.logo}
+            initial={{ opacity: 0, left: "-30%" }}
+            animate={{ opacity: [0, 0, 1], left: ["-30%", "-30%", "0%"] }}
+            transition={{
+              ...motionConfig,
+              times: [0, 0.55, 1],
+            }}
+          />
+        )}
+      </Grid>
 
-        minWidth: graphOne?.minWidth ?? "0.3em",
-        minHeight: graphOne?.minHeight ?? "3.5em",
-        background: graphOne?.color ?? "#D54141",
-
-        boxShadow: !shadowOpacity
-          ? "none"
-          : `0.1rem 0.1rem 0.2rem rgba(0,0,0,${shadowOpacity})`,
-
-        position: "relative",
-      }}
-      initial={{
-        opacity: 0,
-        x: "-6em",
-      }}
-      animate={{
-        opacity: [0, 0, 1, 1, 1],
-        x: ["-6em", "-6em", "0em", "0em", "0em"],
-      }}
-      transition={{
-        ...(motionConfig.transition as Keyframes),
-        times: [0, 0.25, 0.5, 0.75, 1],
-      }}
-    />
-  );
-};
-
-const StyleOneGraphTwo: React.FC<
-  graphTwoProps & flexProps & shadowProps & borderProps
-> = ({ order, shadowOpacity, ...graphTwo }) => {
-  const motionConfig = useContext(MotionConfigContext);
-
-  return (
-    <motion.div
-      style={{
-        order: order,
-        zIndex: -1, // TODO: Remove?
-
-        background: graphTwo?.color ?? "#222222",
-
-        border: `solid ${graphTwo?.borderWidth ?? "0rem"}`,
-        borderColor: `${graphTwo?.borderColor ?? "none"}`,
-        borderRadius: `calc(${graphTwo?.borderRadius ?? "0rem"} * 1.1)`,
-        boxSizing: "border-box",
-
-        boxShadow: !shadowOpacity
-          ? "none"
-          : `0.1rem 0.1rem 0.2rem rgba(0,0,0,${shadowOpacity})`,
-
-        position: "absolute",
-        width: "100%",
-        height: "calc(100% + 2em)",
-        margin: "0 -1em",
-        padding: "0 1em",
-
-        right: 0,
-        marginLeft: "-1.8em",
-        paddingLeft: "1.8em",
-      }}
-      initial={{
-        width: 0,
-        paddingLeft: 0,
-        paddingRight: 0,
-      }}
-      animate={{
-        paddingLeft: ["0", "0", "-1.8em"],
-        paddingRight: ["0", "0", "1.8em"],
-        width: ["calc(0% + 0em)", "calc(0% + 0em)", "calc(100% + 2em)"],
-      }}
-      transition={{
-        ...(motionConfig.transition as Keyframes),
-        times: [0, 0.3, 1],
-      }}
-    />
-  );
-};
-
-const StyleOneTextWrapper: React.FC<flexProps> = ({ order, children }) => (
-  <div
-    style={{
-      order: order,
-      display: "flex",
-      flexDirection: "column",
-      marginRight: "1.2em",
-    }}
-  >
-    {children}
-  </div>
-);
-
-const StyleOneTextContent: React.FC<
-  {
-    keyFrameTimes?: [number, number, number];
-    marginBottom?: Property.MarginBottom;
-  } & shadowProps
-> = ({ children, keyFrameTimes, marginBottom, shadowOpacity }) => {
-  const motionConfig = useContext(MotionConfigContext);
-
-  return (
-    <div
-      style={{
-        marginBottom: marginBottom,
-        overflow: "hidden",
-        textAlign: "right",
-        transition: "margin 0.1s height 0.1s",
-      }}
-    >
       <motion.div
-        style={{
-          display: "inline-flex",
-          padding: "0 0.2rem",
-          position: "relative",
-          transition: "font-size 0.1s",
-
-          textShadow: !shadowOpacity
-            ? "none"
-            : `0.1rem 0.1rem 0.2rem rgba(0,0,0,${shadowOpacity})`,
+        className={classes.graphOne}
+        initial={{ opacity: 0, x: "-6em" }}
+        animate={{
+          opacity: [0, 0, 1, 1, 1],
+          x: ["-6em", "-6em", "0em", "0em", "0em"],
         }}
-        initial={{ right: "-102%" }}
-        animate={{ right: ["-102%", "-102%", "0%"] }}
         transition={{
-          ...(motionConfig.transition as Keyframes),
-          times: keyFrameTimes,
+          ...motionConfig,
+          times: [0, 0.25, 0.5, 0.75, 1],
         }}
-      >
-        {children}
-      </motion.div>
-    </div>
+      />
+
+      <Grid className={classes.textRoot}>
+        <Grid>
+          <motion.div
+            className={classes.textContentMotion}
+            initial={{ right: "-102%" }}
+            animate={{ right: ["-102%", "-102%", "0%"] }}
+            transition={{ ...motionConfig, times: [0, 0.45, 1] }}
+          >
+            {props.children[0]}
+          </motion.div>
+        </Grid>
+        <Grid>
+          <motion.div
+            className={classes.textContentMotion}
+            initial={{ right: "-102%" }}
+            animate={{ right: ["-102%", "-102%", "0%"] }}
+            transition={{ ...motionConfig, times: [0, 0.5, 1] }}
+          >
+            {props.children[1]}
+          </motion.div>
+        </Grid>
+      </Grid>
+
+      <motion.div
+        className={classes.graphTwo}
+        initial={{ width: 0, paddingLeft: 0, paddingRight: 0 }}
+        animate={{
+          paddingLeft: ["0", "0", "-1.8em"],
+          paddingRight: ["0", "0", "1.8em"],
+          width: ["calc(0% + 0em)", "calc(0% + 0em)", "calc(100% + 2em)"],
+        }}
+        transition={{
+          ...motionConfig,
+          times: [0, 0.3, 1],
+        }}
+      />
+    </Grid>
   );
 };
-
-//const StyleOneDefaultPrimaryText = styled.div<{ color: string }>`
-//  color: ${({ color }) => color};
-//  font-family: 'Open Sans', sans-serif;
-//  font-size: 1.9em;
-//  font-weight: bold,
-//  text-transform: uppercase,
-//`;
-//const StyleOneDefaultSecondaryText = styled.div<{ color: string }>`
-//  color: ${({ color }) => color};
-//  font-family: 'Open Sans', sans-serif;
-//  font-size: 1.1em;
-//  font-weight: lighter,
-//  text-transform: none,
-//`;
-
-const StyleOne: React.FC<CardProps> = (props) => (
-  <MotionConfig
-    transition={{
-      duration: props.durationInSecs ?? 4,
-      repeat: 1,
-      repeatDelay: 5,
-      repeatType: "reverse",
-      ease: [0.19, 0.76, 0.32, 1], // Cubic-bezier params.
-    }}
-  >
-    <div
-      style={{
-        fontSize: props.cardSize ?? "24px",
-        bottom: props.margins?.vertical ?? "4rem",
-        right: props.margins?.horizontal ?? "4rem",
-        flexDirection: "row-reverse",
-        display: "flex",
-        alignItems: "center",
-        position: "absolute",
-        transition: "left 0.1s, bottom 0.1s right 0.1s",
-      }}
-    >
-      <StyleOneLogo order={0} logo={props.logo} />
-      <StyleOneGraphOne
-        order={1}
-        {...props.graphOne}
-        shadowOpacity={props.shadowOpacity}
-      />
-      <StyleOneTextWrapper order={2}>
-        <StyleOneTextContent
-          marginBottom={props.lineSpacing ?? "0.2em"}
-          shadowOpacity={props.shadowOpacity}
-          keyFrameTimes={[0, 0.45, 1]}
-        >
-          {props.children[0]}
-        </StyleOneTextContent>
-        <StyleOneTextContent
-          shadowOpacity={props.shadowOpacity}
-          keyFrameTimes={[0, 0.5, 1]}
-        >
-          {props.children[1]}
-        </StyleOneTextContent>
-      </StyleOneTextWrapper>
-      <StyleOneGraphTwo
-        order={3}
-        {...props.graphTwo}
-        {...props.borders}
-        shadowOpacity={props.shadowOpacity}
-      />
-    </div>
-  </MotionConfig>
-);
 
 //const PrimaryText = styled(StyleOneDefaultPrimaryText)`
 //  font-family: "Fira Code", monospace;
@@ -361,10 +269,36 @@ const StyleOne: React.FC<CardProps> = (props) => (
 //  font-size: 1.6em;
 //`;
 
-export type CardStyles1 = {
-  primaryTextColor?: string;
-  secondaryTextColor?: string;
-};
+export type CardStyles1 = Partial<{
+  root: Partial<{
+    fontSize: Property.FontSize;
+    bottom: Property.Bottom;
+    right: Property.Right;
+  }>;
+
+  graphOne: Partial<{
+    color: Property.Color;
+    minWidth: Property.MinWidth;
+    minHeight: Property.MinHeight;
+  }>;
+
+  graphTwo: Partial<{
+    color: Property.Color;
+  }>;
+
+  borders: Partial<{
+    borderColor: Property.BorderColor;
+    borderRadius: Property.BorderRadius;
+    borderWidth: Property.BorderWidth;
+  }>;
+
+  primaryTextColor: Property.Color;
+  secondaryTextColor: Property.Color;
+  logoHeight: Property.MaxHeight;
+
+  lineSpacing: Property.MarginBottom;
+  shadowOpacity: Property.Opacity;
+}>;
 
 export type CardProps1 = {
   primaryText?: string;
